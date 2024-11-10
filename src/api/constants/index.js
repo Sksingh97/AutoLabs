@@ -1,0 +1,5 @@
+export const BASE_URL = "http://192.168.3.103:8001/api"
+export const SIGN_UP = "/temp/users"
+export const VERIFY_OTP = "/signup"
+export const SEND_OTP = "/verify"
+export const LOGIN = "/login"
