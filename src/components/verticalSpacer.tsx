@@ -1,7 +1,7 @@
 import {View, StyleSheet} from "react-native"
 import ProtoType from 'prop-types'
 
-const Vrs = ({height}:any) => {
+const Vrs = ({height=0}:any) => {
     return (
         <View style={[styles.container, {height}]}/>
     )
@@ -9,10 +9,6 @@ const Vrs = ({height}:any) => {
 
 Vrs.protoType = {
     height: ProtoType.number
-}
-
-Vrs.defaultProps = {
-    height:0
 }
 
 export default Vrs;

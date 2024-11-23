@@ -7,6 +7,9 @@ import Show from "../assets/images/show.svg"
 import Lock from "../assets/images/lock.svg"
 import Checked from "../assets/images/checked.svg"
 import UnChecked from "../assets/images/unchecked.svg"
+import Add from "../assets/images/add.svg"
+import RightArrow from "../assets/images/right.svg"
+import HomeIcon from "../assets/images/home.svg"
 export {
     LeftArrow,
     Google,
@@ -16,5 +19,8 @@ export {
     Show,
     Lock,
     Checked,
-    UnChecked
+    UnChecked,
+    Add,
+    RightArrow,
+    HomeIcon
 }

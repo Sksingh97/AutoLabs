@@ -6,12 +6,12 @@ import { ThemeContext } from '../provider/theme';
 import { deviceWidth } from '../utils/helper';
 import fontSize from '../constants/fontSize';
 
-const CustomButton = ({title, type, onPress, buttonStyle, isDisabled}:any) => {
+const CustomButton = ({title="lable", type="Primary", onPress=()=>{}, buttonStyle={}, isDisabled=false}:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors)
     return (
-        <View style={[styles.container, isDisabled?styles.disabled:{}]}>
-            <TouchableOpacity style={styles.button} onPress={onPress} disabled={isDisabled}>
+        <View style={[styles.container, buttonStyle, isDisabled?styles.disabled:{}]}>
+            <TouchableOpacity style={[styles.button,buttonStyle]} onPress={onPress} disabled={isDisabled}>
                 <Text style={styles.text}>{title}</Text>                                                                                                       
             </TouchableOpacity>
         </View>
@@ -30,13 +30,6 @@ CustomButton.propType = {
         borderRadius: PropType.number
     }),
     isDisabled: PropType.bool
-}
-CustomButton.defaultProp = {
-    title: "lable",
-    type: "Primary",
-    onPress: ()=>{},
-    buttonStyle: {},
-    isDisabled: false
 }
 
 const getStyle = (colors:any) => StyleSheet.create({

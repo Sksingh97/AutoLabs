@@ -4,3 +4,4 @@ export type LoggedInUser = {
     token: string;
     ref_token: string; // Optional field
   };
+  

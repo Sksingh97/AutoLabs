@@ -11,13 +11,20 @@ import {
 import { useContext } from "react"
 import { ThemeContext } from "../provider/theme"
 
-import { isIos } from "../utils/helper"
+import { deviceWidth, isIos } from "../utils/helper"
 import fontSize from "../constants/fontSize"
 import PropTypes from 'prop-types';
+import { current } from "@reduxjs/toolkit"
 
-const Header = ({LeftIcons=[], Title="", RightIcons=[]}:any) => {
+const SetupHeader = ({LeftIcons=[], Title="", RightIcons=[], noOfStep=4, currentStep=1}:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors)
+    const getProgressWidth=()=>{
+        return noOfStep*((deviceWidth()/2)/noOfStep)
+    }
+    const getFillerWidth=()=>{
+        return currentStep*((deviceWidth()/2)/noOfStep)
+    }
     return (
         <View style={styles.container}>
             {/* Header left button */}
@@ -29,7 +36,9 @@ const Header = ({LeftIcons=[], Title="", RightIcons=[]}:any) => {
             </View>
             {/* Header title */}
             <View style={styles.CenterTitleContainer}>
-                <Text style={styles.TitleText}>{Title}</Text>
+                <View style={[styles.progressBar, {width:getProgressWidth()}]}>
+                    <View  style={[styles.progressFiller, {width:getFillerWidth()}]}></View>
+                </View>
             </View>
             {/* Header right button */}
             <View style={styles.RightIconContainer}>
@@ -37,20 +46,20 @@ const Header = ({LeftIcons=[], Title="", RightIcons=[]}:any) => {
                     {item()}
                     {/* <LeftArrow width={25} height={25} fill={colors.Text} stroke={colors.Text}/> */}
                 </TouchableOpacity>))}
+                
             </View>
         </View>
     )
 }
 
-Header.propTypes = {
-    LeftIcons: PropTypes.arrayOf(PropTypes.func),
-    Title: PropTypes.string,
-    RightIcons: PropTypes.arrayOf(PropTypes.func)
+SetupHeader.propTypes = {
+    LeftIcons: PropTypes.arrayOf(PropTypes.func).isRequired,
+    RightIcons: PropTypes.arrayOf(PropTypes.func),
+    noOfStep: PropTypes.number,
+    currentStep: PropTypes.number
   };
-  
 
-
-export default Header
+export default SetupHeader
 
 const getStyle = (colors:any) => StyleSheet.create({
     container: {
@@ -63,18 +72,21 @@ const getStyle = (colors:any) => StyleSheet.create({
     },
     LeftIconContainer:{
         width: "25%",
-        paddingLeft: 20,
-        flexDirection: 'row'
+        paddingHorizontal: 20,
+        flexDirection: 'row',
     },
     RightIconContainer:{
         width: "25%",
-        paddingLeft: 24,
-        flexDirection: 'row-reverse'
+        // paddingLeft: 24,
+        flexDirection: 'row-reverse',
+        justifyContent:'center',
+        alignItems:'center',
     },
     CenterTitleContainer:{
         width: "50%",
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexDirection: 'row',
     },
     TitleText:{
         color: colors.Text,
@@ -91,4 +103,19 @@ const getStyle = (colors:any) => StyleSheet.create({
         alignContent: 'center',
         
     },
+    progressBar:{
+        height:10,
+        width:'100%',
+        backgroundColor: colors.Border,
+        borderRadius: 5,
+        flexDirection: 'row',
+        justifyContent: 'flex-start'
+    },
+    progressFiller:{
+        height:10,
+        width:'20%',
+        borderRadius:5,
+        alignItems: 'center',
+        backgroundColor: colors.Button.Primary
+    }
 })

@@ -4,7 +4,7 @@ import { ThemeContext } from '../provider/theme';
 import Vrs from './verticalSpacer';
 import PropType from "prop-types"
 
-const OtpInput = ({ length, onChange, label }:any) => {
+const OtpInput = ({ length=4, onChange=()=>{}, label="" }:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyles(colors)
   const inputRefs = useRef([]);
@@ -88,10 +88,5 @@ OtpInput.prototype = {
     onChange: PropType.func.isRequired
 }
 
-OtpInput.defaultProps = {
-    lable: "",
-    length: 4,
-    onChange: ()=>{}
-}
 
 export default OtpInput;

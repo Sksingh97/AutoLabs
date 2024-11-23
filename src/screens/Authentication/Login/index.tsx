@@ -7,11 +7,9 @@ import Heading from "../../../components/heading"
 import InputField from "../../../components/inputField"
 import Vrs from "../../../components/verticalSpacer"
 import CustomButton from "../../../components/button"
-import CustomCheckBox from "../../../components/checkBox"
-import OtpInput from "../../../components/otpInput"
 import { validateIndianPhoneNumber } from "../../../utils/helper"
 import { useDispatch } from "react-redux"
-import { otpRequest } from "../../../store/actions/authAction"
+import { loginOtpRequest } from "../../../store/actions/authAction"
 
 
 const Login = ({navigation}:any) => {
@@ -40,7 +38,7 @@ const Login = ({navigation}:any) => {
             hasError = true;
         }
         if(!hasError){
-            dispatch(otpRequest({mobile_number: _phone}))
+            dispatch(loginOtpRequest({mobile_number: _phone}))
         }
     }
 

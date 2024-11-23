@@ -1,35 +1,41 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-native"
 import { useContext, useState }from "react";
 import { ThemeContext } from "../provider/theme";
-import { Email, Hide, Show, Lock } from "../constants/images";
+import { Email, Hide, Show, Lock, Add } from "../constants/images";
 import { deviceWidth } from "../utils/helper";
-import ProtoType from "prop-types"
+import PropType from "prop-types"
 
-const InputField = ({label, showRightIcon, isSecure, hasError, isMandatory, error, keyboardType="default", placeHolder="", onChange=()=>{}, maxLength}:any) => {
+const InputField = ( {
+    label="", 
+    showRightIcon= false, 
+    isSecure= false, 
+    hasError= false, 
+    isMandatory= false, 
+    error="", 
+    keyboardType="default", 
+    placeHolder="", 
+    onChange=()=>{},
+    maxLength= 50,
+    rightIconType= "Eye",
+    iconPressHandler=()=>{},
+    containerStyle={}
+}:any) => {
     const [secureText, setSecureText] = useState(isSecure)
     const { colors } = useContext(ThemeContext)
     const styles = getStyles(colors);
     const getIconByLabel=()=>{
         switch(label) {
             case "Email":
-                return <Email width={20} height={20} fill={colors.Text} stroke={colors.Text}/>
+                return <Email width={20} height={20} fill={colors.Button.Primary} stroke={colors.Button.Primary}/>
             case "Password":
                 return <Lock width={20} height={20} fill={colors.Text} stroke={colors.Text}/>
         }
     }
-    return (
-        <View style = {styles.container}>
-            <View style={styles.lableContainer}>
-                <Text>{label} {isMandatory?'*':''}</Text>
-            </View>
-            <View style={styles.fieldContainer}>
-                <View>
-                    {getIconByLabel()}
-                </View>
-                <View>
-                    <TextInput maxLength={maxLength} style={styles.inputField} placeholder={placeHolder} secureTextEntry ={secureText} keyboardType={keyboardType} onChangeText={onChange}/>
-                </View>
-                {showRightIcon&&<View>
+
+    const renderRightIcon=()=>{
+        switch(rightIconType){
+            case "Eye":
+                return (<View>
                     <TouchableOpacity onPress={()=>{
                         setSecureText(!secureText)
                     }}>
@@ -40,7 +46,31 @@ const InputField = ({label, showRightIcon, isSecure, hasError, isMandatory, erro
                         <Hide width={20} height={20} fill={colors.Text} stroke={colors.Text}/>
                         }
                     </TouchableOpacity>
-                </View>}
+                </View>)
+            case "Add":
+                return (<View>
+                    <TouchableOpacity style={styles.iconContainer} onPress={()=>{
+                        iconPressHandler()
+                    }}>
+                        <Add width={20} height={20} fill={colors.TextWhite} stroke={colors.TextWhite}/>
+                    </TouchableOpacity>
+                </View>)
+        }
+    }
+
+    return (
+        <View style = {[styles.container, containerStyle]}>
+            <View style={styles.lableContainer}>
+                <Text>{label} {isMandatory?'*':''}</Text>
+            </View>
+            <View style={styles.fieldContainer}>
+                <View>
+                    {getIconByLabel()}
+                </View>
+                <View>
+                    <TextInput maxLength={maxLength} style={styles.inputField} placeholder={placeHolder} secureTextEntry ={secureText} keyboardType={keyboardType} onChangeText={onChange}/>
+                </View>
+                {showRightIcon&&renderRightIcon()}
             </View>
             {hasError&&<View style={styles.fieldErrorContainer}>
                 <Text style={styles.errorText}>* {error}</Text>
@@ -49,31 +79,22 @@ const InputField = ({label, showRightIcon, isSecure, hasError, isMandatory, erro
     )
 }
 
-InputField.prototype = {
-    label: ProtoType.string.isRequired, 
-    showRightIcon: ProtoType.bool, 
-    isSecure: ProtoType.bool, 
-    hasError: ProtoType.bool, 
-    isMandatory: ProtoType.bool, 
-    error: ProtoType.string, 
-    keyboardType: ProtoType.string, 
-    placeHolder: ProtoType.string, 
-    onChange: ProtoType.func.isRequired,
-    maxLength: ProtoType.number
+InputField.proptype = {
+    label: PropType.string.isRequired, 
+    showRightIcon: PropType.bool, 
+    isSecure: PropType.bool, 
+    hasError: PropType.bool, 
+    isMandatory: PropType.bool, 
+    error: PropType.string, 
+    keyboardType: PropType.string, 
+    placeHolder: PropType.string, 
+    onChange: PropType.func.isRequired,
+    maxLength: PropType.number,
+    rightIconType: PropType.oneOf(["Add", "Eye"]).isRequired,
+    iconPressHandler: PropType.func.isRequired,
+    containerStyle: PropType.object.isRequired
 }
 
-InputField.defaultProps = {
-    label:"", 
-    showRightIcon: false, 
-    isSecure: false, 
-    hasError: false, 
-    isMandatory: false, 
-    error:"", 
-    keyboardType:"default", 
-    placeHolder:"", 
-    onChange:()=>{},
-    maxLength: 50
-}
 
 export default InputField;
 
@@ -113,5 +134,10 @@ const getStyles = (colors:any) => StyleSheet.create({
     errorText:{
         fontSize:14,
         color:'red'
+    },
+    iconContainer:{
+        backgroundColor:colors.Button.Primary, 
+        padding:10, 
+        borderRadius:25
     }
 })

@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import fontSize from "../constants/fontSize";
 import Vrs from "./verticalSpacer";
 
-const Heading = ({message="", subMessage=""}:any) => {
+const SetupHeading = ({message=()=>{}, subMessage=""}:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors)
     return (
         <>
             <View style={styles.container}>
-                <Text style={styles.message}>{message}</Text>
+                {message()}
             </View>
             <Vrs height={10}/>
             {subMessage && <View style={styles.subContainer}>
@@ -22,13 +22,13 @@ const Heading = ({message="", subMessage=""}:any) => {
     )
 }
 
-Heading.protoType = {
-    message: PropTypes.string.isRequired,
+SetupHeading.protoType = {
+    message: PropTypes.func,
     subMessage: PropTypes.string.isRequired
 }
 
 
-export default Heading
+export default SetupHeading
 
 const getStyle = (colors:any) => StyleSheet.create({
     container:{
@@ -46,7 +46,7 @@ const getStyle = (colors:any) => StyleSheet.create({
     message: {
         color: colors.Text,
         fontSize: fontSize.H1,
-        fontWeight: '500'
+        fontWeight: '500',
     },
     subMessage: {
         color: colors.Text,

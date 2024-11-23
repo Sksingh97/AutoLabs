@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "watchman watch-del-all && react-native start --reset-cache",
-    "test": "jest"
+    "test": "jest",
+    "android-clean": "cd android && ./gradlew clean && cd ..",
+    "ios-clean": "cd ios && xattr -w com.apple.xcode.CreatedByBuildSystem true /Users/sksingh/workspace/AutoLabs/ios/build && xcodebuild clean && cd .."
   },
   "dependencies": {
     "@react-native-masked-view/masked-view": "^0.3.2",

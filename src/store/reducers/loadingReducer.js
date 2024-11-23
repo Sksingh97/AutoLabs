@@ -2,6 +2,7 @@ import { INCREMENT_LOADING, DECREMENT_LOADING } from "../actions/loadingAction";
 // loaderReducer.js
 const initialState = {
   loadingCount: 0,
+  title:"Loading.."
 };
 
 export const loadingReducer = (state = initialState, action) => {
@@ -10,6 +11,7 @@ export const loadingReducer = (state = initialState, action) => {
       return {
         ...state,
         loadingCount: state.loadingCount + 1,
+        title: action.payload?.title||"Loading..."
       };
     case DECREMENT_LOADING:
       return {

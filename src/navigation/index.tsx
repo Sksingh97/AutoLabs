@@ -13,6 +13,7 @@ import CreateRoom from '../screens/AccountSetup/CreateRoom';
 import Home from '../screens/Main/Home';
 import { AccountSetupRoute } from './constants';
 import CreateHome from '../screens/AccountSetup/CreateHome';
+import CreateFloor from '../screens/AccountSetup/CreateFloor';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -48,7 +49,8 @@ const AccountSetupStack = ({loginStep}:any) => {
           screenOptions={{headerShown:false}}
           initialRouteName={AccountSetupRoute[loginStep]}
           >
-            <Stack.Screen name="CreateHome" component={CreateHome} />
+            <Stack.Screen name="CreateHome" component={CreateHome} initialParams={{noOfSteps:4,currentStep:1}}/>
+            <Stack.Screen name="CreateFloor" component={CreateFloor} />
             <Stack.Screen name="CreateRoom" component={CreateRoom} />
             
           </Stack.Navigator>
@@ -65,13 +67,12 @@ const AccountSetupStack = ({loginStep}:any) => {
 
 
 const RootNav = () => {
-     const {token, loginStep} = useSelector((state:any) => state.auth);
-    return (
+     const {token, login_step} = useSelector((state:any) => state.auth);
+     return (
         <>
-        {/* {token != null?getMainAppNav(loginStep): */}
-        <AuthStack/>
-        {/* } */}
-        {/* <AccountSetupStack loginStep={loginStep}/> */}
+        {token != null?getMainAppNav(login_step):<AuthStack/>}
+        {/* <AuthStack/>
+        <AccountSetupStack loginStep={loginStep}/> */}
         </>
     )
 }

@@ -37,5 +37,28 @@ export default {
         invalidOtp: "Invalid Otp! Please enter {digit} digit OTP",
         updateMobileNumber: "Edit Mobile Number ?",
         resendCountDown: "Resend OTP In :"
+    },
+    setupScreen:{
+        back:"Back",
+        save: "Save",
+        create: "Create",
+        home:{
+            add: "Add",
+            select: "Select",
+            home: "Home",
+            name: "Name",
+            fullAddress:"Full Address",
+            subHeading: "Every smart home deserve a name. What would you like to call yours?",
+            subHeadingSelect: "Every home deserve a smart upgrade. select a home to make it smart?",
+            existingHome: "Your Homes"
+        },
+        floor:{
+            create: "Add",
+            floors: "Floors",
+            name: "Name"
+        },
+        room:{
+            room:"Room"
+        }
     }
 }

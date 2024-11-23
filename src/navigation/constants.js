@@ -1,1 +1,1 @@
-export const AccountSetupRoute = ["Home", "Room", "Loction", "Done"]
+export const AccountSetupRoute = ["CreateHome", "CreateRoom", "Loction", "Done"]

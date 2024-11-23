@@ -1,19 +1,19 @@
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import Header from "../../../components/header";
-import { useContext } from "react";
-import { ThemeContext, ThemeProvider } from "../../../provider/theme";
-import { LeftArrow } from "../../../constants/images";
-import Heading from "../../../components/heading";
-import SetupHeading from "../../../components/setupHeading";
-import SetupHeader from "../../../components/setupHeader";
-import InputField from "../../../components/inputField";
-import Vrs from "../../../components/verticalSpacer";
-import CustomButton from "../../../components/button";
-import { deviceHeight, deviceWidth } from "../../../utils/helper";
+import { useContext, useState } from "react";
+import { ThemeContext, ThemeProvider } from "../../provider/theme";
+import { Add, LeftArrow } from "../../constants/images";
+import Heading from "../../components/heading";
+import SetupHeading from "../../components/setupHeading";
+import SetupHeader from "../../components/setupHeader";
+import InputField from "../../components/inputField";
+import Vrs from "../../components/verticalSpacer";
+import CustomButton from "../../components/button";
+import { deviceHeight, deviceWidth } from "../../utils/helper";
 
-const CreateRoom = ({route, navigation}:any) => {
+const CreateFloor = ({route, navigation}:any) => {
     const {colors, translations} = useContext(ThemeContext)
     const { noOfSteps, currentStep} = route.params;
+    const [floorName, setFloorName] = useState("");
     const styles = getStyles(colors);
     const renderBack =() =>{
         return (
@@ -27,13 +27,13 @@ const CreateRoom = ({route, navigation}:any) => {
         return (
             <View style={styles.headingContainer}>
                     <Text style={styles.headingText}>
-                        {translations.setupScreen.home.add}
+                        {translations.setupScreen.floor.create}
                     </Text>
                     <Text style={styles.headingHylightedText}>
-                        {translations.setupScreen.room.room}
+                        {translations.setupScreen.floor.floors}
                     </Text>
                     <Text style={styles.headingText}>
-                        {translations.setupScreen.home.name}
+                        {translations.setupScreen.floor.name}
                     </Text>
             </View>
         )
@@ -49,17 +49,17 @@ const CreateRoom = ({route, navigation}:any) => {
             />
             <SetupHeading message={renderAddHomeName} subMessage={translations.setupScreen.home.subHeading}/>
             <Vrs height={20}/>
-            <InputField placeHolder={`${translations.setupScreen.home.home} ${translations.setupScreen.home.name}`}/>
+                <InputField showRightIcon rightIconType="Add" placeHolder={`${translations.setupScreen.home.home} ${translations.setupScreen.home.name}`} onChange={(value:string)=>{setFloorName(value)}} iconPressHandler={()=>{
+                }}/>
             <View style={styles.buttonContainer}>
-                <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/>
-                <CustomButton title={translations.setupScreen.save} buttonStyle={styles.button} onPress={()=>{navigation.push('CreateFloor', {noOfSteps, currentStep:1+currentStep})}}/>
+                <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1} buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/>
+                <CustomButton title={translations.setupScreen.save} buttonStyle={styles.button} onPress={()=>{navigation.push('CreateRoom', {noOfSteps, currentStep:1+currentStep})}}/>
             </View>
-            
         </View>
     )
 }
 
-export default CreateRoom;
+export default CreateFloor;
 
 const getStyles = (colors:any) => StyleSheet.create({
     containr:{
@@ -93,5 +93,10 @@ const getStyles = (colors:any) => StyleSheet.create({
     },
     button:{
         width:150
+    },
+    inputButtonContainer:{
+        flexDirection:"row",
+        justifyContent:'center',
+        alignItems:'center',
     }
 })
