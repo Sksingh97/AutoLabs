@@ -16,7 +16,7 @@ import fontSize from "../constants/fontSize"
 import PropTypes from 'prop-types';
 import { current } from "@reduxjs/toolkit"
 
-const SetupHeader = ({LeftIcons=[], Title="", RightIcons=[], noOfStep=4, currentStep=1}:any) => {
+const SetupHeader = ({LeftIcons=[], Title="", RightIcons=[], noOfStep=0, currentStep=0}:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors)
     const getProgressWidth=()=>{
@@ -42,7 +42,7 @@ const SetupHeader = ({LeftIcons=[], Title="", RightIcons=[], noOfStep=4, current
             </View>
             {/* Header right button */}
             <View style={styles.RightIconContainer}>
-            {RightIcons && RightIcons.map((item:any, i:number)=>(<TouchableOpacity key={`Left-icon${i}`} style={styles.RightIconButton}>
+            {RightIcons && RightIcons.map((item:any, i:number)=>(<TouchableOpacity key={`Right-icon${i}`} style={styles.RightIconButton}>
                     {item()}
                     {/* <LeftArrow width={25} height={25} fill={colors.Text} stroke={colors.Text}/> */}
                 </TouchableOpacity>))}

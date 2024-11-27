@@ -3,7 +3,6 @@ import { createHomeSuccess, createHomeFailure, CREATE_HOME_REQUEST, getHomeSucce
 import { CreateHome, GetAllHomes } from '../../api/service/homeService';
 import { INCREMENT_LOADING, DECREMENT_LOADING } from '../actions/loadingAction';
 import { navigate } from '../../navigation/navigationService';
-import dispatchService from '../dispatcherService';
 
 function* createHomeSaga(action) {
   try {

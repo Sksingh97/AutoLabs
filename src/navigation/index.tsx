@@ -14,6 +14,7 @@ import Home from '../screens/Main/Home';
 import { AccountSetupRoute } from './constants';
 import CreateHome from '../screens/AccountSetup/CreateHome';
 import CreateFloor from '../screens/AccountSetup/CreateFloor';
+import WellDone from '../screens/AccountSetup/WellDone';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,7 +53,7 @@ const AccountSetupStack = ({loginStep}:any) => {
             <Stack.Screen name="CreateHome" component={CreateHome} initialParams={{noOfSteps:4,currentStep:1}}/>
             <Stack.Screen name="CreateFloor" component={CreateFloor} />
             <Stack.Screen name="CreateRoom" component={CreateRoom} />
-            
+            <Stack.Screen name="WellDone" component={WellDone} />
           </Stack.Navigator>
     )
   }

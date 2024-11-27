@@ -43,7 +43,7 @@ request.interceptors.response.use(
         console.log("\n\n\n\n\n\n\n\n\n\n\n new Token : ",newData.token)
         error.config.headers['Authorization'] = `Bearer ${newData.token}`;
         // 4. Retry the failed request with the new token
-        return request(error.config);
+        // return request(error.config);
         // dispatchService.dispatch({ type: LOG_OUT_USER, payload: {} })
       }
       if (error.response) {

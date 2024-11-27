@@ -33,7 +33,7 @@ const Header = ({LeftIcons=[], Title="", RightIcons=[]}:any) => {
             </View>
             {/* Header right button */}
             <View style={styles.RightIconContainer}>
-            {RightIcons && RightIcons.map((item:any, i:number)=>(<TouchableOpacity key={`Left-icon${i}`} style={styles.RightIconButton}>
+            {RightIcons && RightIcons.map((item:any, i:number)=>(<TouchableOpacity key={`right-icon${i}`} style={styles.RightIconButton}>
                     {item()}
                     {/* <LeftArrow width={25} height={25} fill={colors.Text} stroke={colors.Text}/> */}
                 </TouchableOpacity>))}

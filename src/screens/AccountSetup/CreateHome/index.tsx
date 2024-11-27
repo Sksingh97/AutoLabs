@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useContext, useEffect, useState } from "react";
 import { ThemeContext, ThemeProvider } from "../../../provider/theme";
-import { HomeIcon, LeftArrow, RightArrow } from "../../../constants/images";
+import { HomeIcon, LeftArrow, Plus, RightArrow } from "../../../constants/images";
 import SetupHeading from "../../../components/setupHeading";
 import SetupHeader from "../../../components/setupHeader";
 import InputField from "../../../components/inputField";
@@ -10,8 +10,9 @@ import CustomButton from "../../../components/button";
 import { useDispatch, useSelector } from "react-redux"
 import { createHomeRequest, getHomeRequest } from "../../../store/actions/homeActions";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
-import { deviceWidth } from "../../../utils/helper";
+import { deviceWidth, getColumns } from "../../../utils/helper";
 import Home from "../../Main/Home";
+import ViewCard from "../../../components/viewCard";
 
 const CreateHome = ({route, navigation}:any) => {
     const {colors, translations} = useContext(ThemeContext)
@@ -83,42 +84,45 @@ const CreateHome = ({route, navigation}:any) => {
         navigation.push('CreateFloor', {noOfSteps:noOfSteps, currentStep:1+currentStep, parentId: id})
     }
 
+    const renderViewCardIcon = (item)=> {
+        if(item.id == '-STATIC-'){
+            return <Plus  width={35} height={35} fill={colors.Button.Primary} stroke={colors.Button.Primary}/>
+        } else {
+            return <HomeIcon  width={35} height={35} fill={colors.Button.Primary} stroke={colors.Button.Primary}/>
+        }
+    }
+
     const renderItem = ({ item }:any) => {
         return (
-          <TouchableOpacity style={styles.homeListItem} onPress={
-            ()=>{
-                goToNextScreen(item.id)
-            }
-          }>
-            <View style={styles.listItemImageContainer}>
-            <HomeIcon width={100} height={100} fill={colors.TextWhite} stroke={colors.TextWhite} />
-            </View>
-            <View style={styles.homeListItemDetailsContainer}>
-                <View style={styles.homeNameContainer}>
-                    <Text style={styles.homeName}>{item.name} - {item.address}</Text>
-                </View>
-            </View>
-            <View style={styles.homeListItemButton}>
-                <RightArrow width={25} height={25} fill={colors.Primary} stroke={colors.Primary} />
-            </View>
-          </TouchableOpacity>
-        );
-      };
+          <ViewCard 
+          key={`Home-List-${item.id}`} 
+          renderIcon={()=>renderViewCardIcon(item)} 
+          title={item.name} 
+          isCheck={false} 
+          onPress={item.id == '-STATIC-'?()=>{setCreateHomeFlag(true)}:()=>{
+            goToNextScreen(item.id)
+          }}/>
+        )
+      }
     
     const renderHomeList = () => {
+        const numColumns = getColumns();
+
         return (
             <>
-
-                <FlatList
-                    contentContainerStyle={styles.homeListContainer}
-                    data={data}
-                    keyExtractor={item => item.id}
-                    renderItem={renderItem}
-                />
-                <View style={styles.buttonContainer}>
-                    <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/>
-                    <CustomButton title={translations.setupScreen.create} buttonStyle={styles.button} onPress={()=>{setCreateHomeFlag(!createHomeFlag)}}/>
+            <Vrs height={20}/>
+                <View style={styles.labelContainer}>
+                    <Text style={styles.label}>
+                        Current Homes
+                    </Text>
                 </View>
+                <FlatList
+                data={[{name: "Add Home", id:"-STATIC-"}, ...data]}
+                numColumns={numColumns}
+                keyExtractor={(item) => item.id}
+                renderItem={renderItem}
+                contentContainerStyle={styles.homeFlatListContainer}
+                />
             </>
         )
     }
@@ -128,14 +132,14 @@ const CreateHome = ({route, navigation}:any) => {
             <>
             
             
-            <InputField label={translations.setupScreen.home.name} placeHolder={`${translations.setupScreen.home.home} ${translations.setupScreen.home.name}`} onChange={(value:string)=>{setHomeNameError("");setHomeName(value)}} hasError={nameError.length>0} error={nameError}/>
+            <InputField label={translations.setupScreen.home.name} placeHolder={`${translations.setupScreen.home.home} ${translations.setupScreen.home.name}`} onChange={(value:string)=>{setHomeNameError("");setHomeName(value.trim())}} hasError={nameError.length>0} error={nameError}/>
             <Vrs height={20}/>
-            <InputField label={translations.setupScreen.home.fullAddress} placeHolder={translations.setupScreen.home.fullAddress}  onChange={(value:string)=>{ setHomeAddressError("");setHomeAddress(value)}} hasError={addressError.length>0} error={addressError}/>
+            <InputField label={translations.setupScreen.home.fullAddress} placeHolder={translations.setupScreen.home.fullAddress}  onChange={(value:string)=>{ setHomeAddressError("");setHomeAddress(value.trim())}} hasError={addressError.length>0} error={addressError}/>
             <Vrs height={40}/>
-            <View style={styles.buttonContainer}>
+            {/* <View style={styles.buttonContainer}>
                 <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/>
                 <CustomButton title={translations.setupScreen.save} buttonStyle={styles.button} onPress={createHome}/>
-            </View>
+            </View> */}
             </>
         )
     }
@@ -241,6 +245,22 @@ const getStyles = (colors:any) => StyleSheet.create({
         alignItems:'center',
         paddingLeft:5,
         paddingTop:10,
+    },
+    homeFlatListContainer: {
+        width:'100%',
+        paddingHorizontal: 10
+    },
+    labelContainer:{
+        width: deviceWidth()-20,
+        height: 50,
+        marginHorizontal:10,
+        justifyContent:'center',
+        alignItems: 'center',
+    },
+    label: {
+        color: colors.Text,
+        fontWeight: 'bold',
+        fontSize: 20
     }
 
 })

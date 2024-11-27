@@ -14,3 +14,11 @@ export const GET_USER = "/user"
 //Home
 export const HOME = "/home/"
 
+//Floor
+export const FLOOR = "/floor/"
+export const FLOOR_LIST = "/floor/{HOME_ID}"
+
+//Room
+export const ROOM = "/room/"
+export const ROOM_LIST = "/room/{FLOOR_ID}"
+

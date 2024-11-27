@@ -1,16 +1,16 @@
 import { call, put, takeEvery } from 'redux-saga/effects';
 import { INCREMENT_LOADING, DECREMENT_LOADING } from '../actions/loadingAction';
 import { navigate } from '../../navigation/navigationService';
-import {  } from '../actions/floorAction'
+import { CREATE_FLOOR_REQUEST, GET_FLOOR_REQUEST, createFloorSuccess, createFloorFailure, getFloorSuccess, getFloorFailure } from '../actions/floorAction'
+import { CreateFloor, GetAllFloors } from '../../api/service/floorService';
 
 function* createFloorSaga(action) {
   try {
-    yield put({type: INCREMENT_LOADING, payload:{title: "Create Homes..."}})
-    const response = yield call(CreateHome, action.payload.data);
-    yield put(createHomeSuccess(response));
-    navigate('CreateFloor', {noOfSteps:action.payload.noOfSteps, currentStep:1+action.payload.currentStep, parentId: response.id})
+    yield put({type: INCREMENT_LOADING, payload:{title: "Create Floor..."}})
+    const response = yield call(CreateFloor, action.payload.data);
+    yield put(createFloorSuccess(response));
   } catch (error) {
-    yield put(createHomeFailure(error.message));
+    yield put(createFloorFailure(error.message));
   } finally {
     yield put({type: DECREMENT_LOADING})
   }
@@ -18,17 +18,18 @@ function* createFloorSaga(action) {
 
 function* getFloorSaga(action) {
   try {
-    yield put({type: INCREMENT_LOADING, payload:{title: "Fetching Homes..."}})
-    const response = yield call(GetAllHomes, action.payload.data);
-    yield put(getHomeSuccess(response));
+    yield put({type: INCREMENT_LOADING, payload:{title: "Fetching Floors..."}})
+    console.log("GET FLORS : ::  :", action.payload)
+    const response = yield call(GetAllFloors, action.payload);
+    yield put(getFloorSuccess(response));
   } catch (error) {
-    yield put(getHomeFailure(error.message));
+    yield put(getFloorFailure(error.message));
   } finally {
     yield put({type: DECREMENT_LOADING})
   }
 }
 
-export function* watchHomeSaga() {
+export function* watchFloorSaga() {
   yield takeEvery(CREATE_FLOOR_REQUEST, createFloorSaga);
   yield takeEvery(GET_FLOOR_REQUEST, getFloorSaga);
 }

@@ -37,7 +37,7 @@ const OtpInput = ({ length=4, onChange=()=>{}, label="" }:any) => {
         <View style={styles.otpContainer}>
             {Array(length).fill(null).map((_, index) => (
                 <TextInput
-                key={index}
+                key={`user-input-${index}`}
                 ref={ref => inputRefs.current[index] = ref}
                 style={styles.input}
                 keyboardType="numeric"
