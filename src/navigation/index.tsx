@@ -15,13 +15,21 @@ import { AccountSetupRoute } from './constants';
 import CreateHome from '../screens/AccountSetup/CreateHome';
 import CreateFloor from '../screens/AccountSetup/CreateFloor';
 import WellDone from '../screens/AccountSetup/WellDone';
+import { Dimensions } from 'react-native';
+import { deviceWidth } from '../utils/helper';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
     return (
-        <Tab.Navigator>
+        <Tab.Navigator
+        screenOptions={{
+          tabBarPosition: deviceWidth() < 600 ? 'bottom' : 'left',
+          headerShown: false,
+          animation : 'shift'
+        }}
+        >
             <Tab.Screen name="Home" component={Home} />
         </Tab.Navigator>
 
@@ -59,6 +67,7 @@ const AccountSetupStack = ({loginStep}:any) => {
   }
 
   const getMainAppNav = (loginStep:number) => {
+    console.log("LOGIN STEP : : : :", loginStep)
     if(loginStep<4) {
         return <AccountSetupStack loginStep={loginStep}/>
     }else{

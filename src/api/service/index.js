@@ -29,7 +29,8 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     (response) => {
       showTost({type:"success", header: "Success", message: response.data.message})
-      return response;
+      console.log("RESPONSE : :: ", response.data)
+      return response.data;
     },
     async (error) => {
       if(error?.response?.status == 401){

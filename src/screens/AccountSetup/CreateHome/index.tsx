@@ -13,6 +13,7 @@ import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { deviceWidth, getColumns } from "../../../utils/helper";
 import Home from "../../Main/Home";
 import ViewCard from "../../../components/viewCard";
+import { s, vs, ms, mvs } from 'react-native-size-matters/extend';
 
 const CreateHome = ({route, navigation}:any) => {
     const {colors, translations} = useContext(ThemeContext)
@@ -136,10 +137,10 @@ const CreateHome = ({route, navigation}:any) => {
             <Vrs height={20}/>
             <InputField label={translations.setupScreen.home.fullAddress} placeHolder={translations.setupScreen.home.fullAddress}  onChange={(value:string)=>{ setHomeAddressError("");setHomeAddress(value.trim())}} hasError={addressError.length>0} error={addressError}/>
             <Vrs height={40}/>
-            {/* <View style={styles.buttonContainer}>
-                <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/>
+            <View style={styles.buttonContainer}>
+                {/* <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/> */}
                 <CustomButton title={translations.setupScreen.save} buttonStyle={styles.button} onPress={createHome}/>
-            </View> */}
+            </View>
             </>
         )
     }
@@ -151,9 +152,9 @@ const CreateHome = ({route, navigation}:any) => {
             noOfStep={noOfSteps}
             currentStep={currentStep}
             />
-            <SetupHeading message={(data && data.length>0 && !createHomeFlag)?renderSelectHomeName:renderAddHomeName} subMessage={(data && data.length>0 && !createHomeFlag)?translations.setupScreen.home.subHeadingSelect:translations.setupScreen.home.subHeading}/>
+            <SetupHeading message={(!createHomeFlag)?renderSelectHomeName:renderAddHomeName} subMessage={(!createHomeFlag)?translations.setupScreen.home.subHeadingSelect:translations.setupScreen.home.subHeading}/>
             <Vrs height={20}/>
-            {(data && data.length>0 && !createHomeFlag)?renderHomeList():renderHomeCreateForm()}
+            {(!createHomeFlag)?renderHomeList():renderHomeCreateForm()}
             
         </View>
     )
@@ -192,7 +193,7 @@ const getStyles = (colors:any) => StyleSheet.create({
         bottom:20
     },
     button:{
-        width:150
+        width:deviceWidth()-40,
     },
     lableContainer:{
         height:50,

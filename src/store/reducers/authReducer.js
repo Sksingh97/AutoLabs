@@ -7,7 +7,9 @@ import {SIGNUP_VERIFY_SUCCESS,
   LOGIN_VERIFY_SUCCESS,
   LOAD_USER_DATA_FROM_STORE,
   LOG_OUT_USER,
-  REFRESH_TOKEN_SUCCESS
+  REFRESH_TOKEN_SUCCESS,
+  UPDATE_LOGIN_STEP_SUCCESS,
+  UPDATE_LOGIN_STEP_FAILURE
 } from "../actions/authAction"
 
 const initialAuthState = {
@@ -34,9 +36,12 @@ const initialAuthState = {
         return { ...state, ...action.payload};
       case LOAD_USER_DATA_FROM_STORE:
         return {...state, ...action.payload}
+      case UPDATE_LOGIN_STEP_SUCCESS:
+        return {...state, login_step: action.payload.login_step}
       case CREATE_TEMP_USER_FAILURE:
       case SIGNUP_VERIFY_FAILURE:
       case GET_USER_DETAILS_FAILURE:
+      case UPDATE_LOGIN_STEP_FAILURE:
         return { ...state, error: action.payload };
       case LOG_OUT_USER:
         return {...initialAuthState}

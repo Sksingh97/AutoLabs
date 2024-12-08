@@ -20,6 +20,9 @@ export const REFRESH_TOKEN_REQUEST = 'REFRESH_TOKEN_REQUEST';
 export const REFRESH_TOKEN_SUCCESS = 'REFRESH_TOKEN_SUCCESS';
 export const REFRESH_TOKEN_FAILURE = 'REFRESH_TOKEN_FAILURE';
 export const LOG_OUT_USER = 'LOG_OUT_USER';
+export const UPDATE_LOGIN_STEP_REQUEST = "UPDATE_LOGIN_STEP_REQUEST";
+export const UPDATE_LOGIN_STEP_SUCCESS = "UPDATE_LOGIN_STEP_SUCCESS";
+export const UPDATE_LOGIN_STEP_FAILURE = "UPDATE_LOGIN_STEP_FAILURE";
 //Temp/user Signup Step 1
 export const createTempUserRequest = (credentials) => ({ type: CREATE_TEMP_USER_REQUEST, payload: credentials });
 export const createTempUserSuccess = (data) => ({ type: CREATE_TEMP_USER_SUCCESS, payload: data });
@@ -52,3 +55,7 @@ export const refreshTokenSuccess = (data) => ({ type: REFRESH_TOKEN_SUCCESS, pay
 export const refreshTokenFailure = (error) => ({ type: REFRESH_TOKEN_FAILURE, payload: error });
 
 export const loadUserDataFromStore = (data) => ({ type: LOAD_USER_DATA_FROM_STORE, payload: data })
+
+export const updateAuthLoginStepRequest = (data) => ({type: UPDATE_LOGIN_STEP_REQUEST, payload: data})
+export const updateAuthLoginStepSuccess = (data) => ({ type: UPDATE_LOGIN_STEP_SUCCESS, payload: data });
+export const updateAuthLoginStepFailure = (error) => ({ type: UPDATE_LOGIN_STEP_FAILURE, payload: error });

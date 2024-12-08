@@ -1,5 +1,5 @@
 import request from './index';
-import { TEMP_USER_CREATE, SIGNUP_VERIFY_OTP, SEND_OTP, LOGIN, REFRESH_TOKEN } from '../constants'; 
+import { TEMP_USER_CREATE, SIGNUP_VERIFY_OTP, SEND_OTP, LOGIN, REFRESH_TOKEN, UPDATE_LOGIN_STEP } from '../constants'; 
 
 //Signup Step 1
 export const CreateTempUser = async (data) => {
@@ -45,6 +45,15 @@ export const RefreshToken = async (data) => {
   try {
     console.log("REQUEST DATA : : : ", data)
     const response = await request.post(REFRESH_TOKEN, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const UpdateLoginStepReq = async (data) => {
+  try {
+    const response = await request.post(UPDATE_LOGIN_STEP, data);
     return response.data;
   } catch (error) {
     throw error;

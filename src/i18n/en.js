@@ -71,7 +71,12 @@ export default {
         },
         wellDone:{
             title: "Well Done!",
-            message: "Congratulations! Your home is now ready to be have smart features. Start exploring and managing your smart space with ease."
-        }
+            message: "Congratulations! Your home is now ready to be have smart features. Start exploring and managing your smart space with ease.",
+            getStarted: "Get Started"
+        },
+    },
+    homeScreen: {
+        addDevice: "Add Device"       
     }
+
 }

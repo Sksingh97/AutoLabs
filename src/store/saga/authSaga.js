@@ -17,10 +17,13 @@ import { CREATE_TEMP_USER_REQUEST,
   getUserDetailsSuccess,
   REFRESH_TOKEN_REQUEST,
   refreshTokenSuccess,
-  refreshTokenFailure} from '../actions/authAction';
+  refreshTokenFailure,
+  UPDATE_LOGIN_STEP_REQUEST,
+  updateAuthLoginStepSuccess,
+  updateAuthLoginStepFailure} from '../actions/authAction';
 import axios from 'axios';
 import { SIGN_UP } from '../../api/constants';
-import { SignupVerifyOTP, SendLoginOTP, CreateTempUser, LoginVerifyOTP, RefreshToken } from '../../api/service/authentication'; 
+import { SignupVerifyOTP, SendLoginOTP, CreateTempUser, LoginVerifyOTP, RefreshToken, UpdateLoginStepReq } from '../../api/service/authentication'; 
 import { GetUserDetails } from '../../api/service/userService'
 import { INCREMENT_LOADING, DECREMENT_LOADING } from '../actions/loadingAction';
 import { navigate } from '../../navigation/navigationService';
@@ -35,7 +38,8 @@ function* loginSendOtpSaga(action) {
     yield put({type: INCREMENT_LOADING, payload:{title: "Sending OTP..."}})
     const response = yield call(SendLoginOTP, action.payload);
     yield put(loginOtpSuccess(response))
-    navigate('OTP', {mobile_number:action.payload.mobile_number, name: response.data.name, is_login: true});
+    console.log(response.data)
+    navigate('OTP', {mobile_number:action.payload.mobile_number, name: response.name, is_login: true});
   } catch (error) {
     yield put(loginOtpFailure(error.message));
   } finally {
@@ -77,10 +81,10 @@ function* signupVerifyOtpSaga(action) {
       {
         name: action.payload.name, 
         mobile_number: action.payload.mobile_number,
-        token: response.data.access_token,
-        ref_token: response.data.refresh_token
+        token: response.access_token,
+        ref_token: response.refresh_token
       })
-    yield put(signupVerifySuccess(response.data));
+    yield put(signupVerifySuccess(response));
     try{
       const userResp = yield call(GetUserDetails);
       yield put(getUserDetailsSuccess(userResp.data))
@@ -103,13 +107,15 @@ function* loginVerifyOtpSaga(action) {
       {
         name: action.payload.name, 
         mobile_number: action.payload.mobile_number,
-        token: response.data.access_token,
-        ref_token: response.data.refresh_token
+        token: response.access_token,
+        ref_token: response.refresh_token
       })
-    yield put(loginVerifySuccess(response.data));
+    yield put(loginVerifySuccess(response));
+    console.log("LOGIN VERIFY: ", response)
     try{
       const userResp = yield call(GetUserDetails);
       yield put(getUserDetailsSuccess(userResp.data))
+      console.log("LOGIN VERIFY: ", userResp)
     } catch(error) {
       yield put(getUserDetailsFailure(error.message));
     }
@@ -153,6 +159,21 @@ function* refreshTokenSaga(action) {
   }
 }
 
+function* updateLoginStepSaga(action) {
+  try {
+    console.log("INSIDE SAGA: :: : ")
+    yield put({type: INCREMENT_LOADING, payload:{title: "Processing..."}})
+    const response = yield call(UpdateLoginStepReq, action.payload);
+    console.log("response : :", response)
+    yield put(updateAuthLoginStepSuccess(action.payload));
+  } catch (error) {
+    console.log(error)
+    yield put(updateAuthLoginStepFailure(error.message));
+  } finally {
+    yield put({ type: DECREMENT_LOADING });
+  }
+}
+
 
 
 export function* watchAuthSaga() {
@@ -163,4 +184,5 @@ export function* watchAuthSaga() {
   yield takeEvery( LOGIN_VERIFY_REQUEST, loginVerifyOtpSaga);
   yield takeEvery( GET_USER_DETAILS_REQUEST, getUserDetailsSaga);
   yield takeEvery( REFRESH_TOKEN_REQUEST, refreshTokenSaga);
+  yield takeEvery( UPDATE_LOGIN_STEP_REQUEST, updateLoginStepSaga);
 }

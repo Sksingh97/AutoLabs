@@ -22,6 +22,17 @@ import Livingroom from "../assets/images/livingRoom.svg"
 import Studyroom from "../assets/images/study.svg"
 import WellDoneImage from "../assets/images/welldone.svg"
 import Close from "../assets/images/close.svg"
+import DownUp from "../assets/images/downUp.svg"
+import Bot from "../assets/images/bot.svg"
+import WeatherBg from "../assets/images/weatherBg.svg"
+import AlertIcon from "../assets/images/alertIcon.svg"
+import CloudSun from "../assets/images/cloudSun.svg"
+import AQI from "../assets/images/aqi.svg"
+import WaterDrop from "../assets/images/waterDrop.svg"
+import Wind from "../assets/images/wind.svg"
+import Vector from "../assets/images/vector.svg"
+import NoData from "../assets/images/noData.svg"
+import MicIcon from "../assets/images/micIcon.svg"
 export {
     LeftArrow,
     Google,
@@ -46,5 +57,16 @@ export {
     Livingroom,
     Studyroom,
     WellDoneImage,
-    Close
+    Close,
+    DownUp,
+    Bot,
+    WeatherBg,
+    AlertIcon,
+    CloudSun,
+    AQI,
+    WaterDrop,
+    Wind,
+    Vector,
+    NoData,
+    MicIcon
 }

@@ -6,6 +6,7 @@ export const SIGNUP_VERIFY_OTP = "/signup/"
 export const SEND_OTP = "/verify"
 export const LOGIN = "/login"
 export const REFRESH_TOKEN = "/refresh/token"
+export const UPDATE_LOGIN_STEP = "/user/login/step"
 
 //User
 export const GET_USER = "/user"

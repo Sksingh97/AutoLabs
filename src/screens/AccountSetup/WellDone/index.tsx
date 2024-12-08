@@ -1,41 +1,36 @@
-import { Button, FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useContext, useEffect, useState } from "react";
-import { ThemeContext, ThemeProvider } from "../../../provider/theme";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useContext } from "react";
+import { ThemeContext } from "../../../provider/theme";
 import { Close, WellDoneImage} from "../../../constants/images";
-import Heading from "../../../components/heading";
-import SetupHeading from "../../../components/setupHeading";
 import SetupHeader from "../../../components/setupHeader";
 import Vrs from "../../../components/verticalSpacer";
 import CustomButton from "../../../components/button";
-import { deviceHeight, deviceWidth, scaleSize } from "../../../utils/helper";
+import { deviceWidth, scaleFont, scaleSize } from "../../../utils/helper";
+import { useDispatch } from "react-redux";
+import { updateAuthLoginStepRequest } from "../../../store/actions/authAction";
 
 const WellDone = ({route, navigation}:any) => {
     const {colors, translations} = useContext(ThemeContext)
     const { noOfSteps, currentStep} = route.params;
     const styles = getStyles(colors);
-
+    const dispatch = useDispatch();
     const renderBack =() =>{
         return (
-            <TouchableOpacity onPress={()=>{navigation.pop();}}>
+            <TouchableOpacity onPress={updateLoginStep}>
                 <Close width={25} height={25} fill={colors.Text} stroke={colors.Text} />
             </TouchableOpacity>
         )
     }
 
-
-    const goToNextScreen = (id) => {
-        navigation.push('Home', {noOfSteps:noOfSteps, currentStep:1+currentStep, parentId: id})
+    const updateLoginStep=async ()=>{
+        dispatch(updateAuthLoginStepRequest({login_step:4}))
     }
-    const renderStepCount =()=><Text> {currentStep} / {noOfSteps} </Text>
 
-    console.log("platform",Platform.OS, scaleSize(50))
     return (
         <View style={styles.containr}>
             <SetupHeader
             LeftIcons={[renderBack]}
             RightIcons={[]}
-            // noOfStep={noOfSteps}
-            // currentStep={currentStep}
             />
             <Vrs height={scaleSize(50)}/>
             <View style={styles.wellDoneContainer}>
@@ -43,19 +38,17 @@ const WellDone = ({route, navigation}:any) => {
                     <WellDoneImage width={scaleSize(50)} height={scaleSize(50)} fill={colors.Text} stroke={colors.Text} />
                 </View>
                 <View style={styles.messageContainer}>
-                    <Text>
+                    <Text style={styles.title}>
                         {translations.setupScreen.wellDone.title}
                     </Text>
-                    <Text>
+                    <Text style={styles.message}>
                         {translations.setupScreen.wellDone.message}
                     </Text>
                 </View>
             </View>
             <View style={styles.buttonContainer}>
-                {/* <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/> */}
-                <CustomButton title={translations.setupScreen.room.done} buttonStyle={styles.button} onPress={()=>{navigation.push('CreateFloor', {noOfSteps, currentStep:1+currentStep})}}/>
+                <CustomButton title={translations.setupScreen.wellDone.getStarted} buttonStyle={styles.button} onPress={updateLoginStep}/>
             </View>
-            
         </View>
     )
 }
@@ -67,12 +60,11 @@ const getStyles = (colors:any) => StyleSheet.create({
         backgroundColor: colors.Primary,
         flex:1,
         alignItems:'center',
-        // justifyContent:'center'
+        width: deviceWidth()
     },
     wellDoneContainer:{
         width: "80%",
         height: scaleSize(150),
-        backgroundColor:'red'
     },
     imageContainer:{
         width:'100%',
@@ -80,13 +72,20 @@ const getStyles = (colors:any) => StyleSheet.create({
         alignItems:'center'
     },
     messageContainer:{
-        width: deviceWidth()-75,
+        width: "100%",
         marginTop:scaleSize(10),
         height: scaleSize(60),
         alignItems: 'center',
-        justifyContent:'space-between',
-        padding: 20,
-        backgroundColor:'yellow'
+        paddingTop:20,
+    },
+    title:{
+        fontSize: scaleFont(30),
+        fontWeight: 'bold'
+    },
+    message:{
+        fontSize: scaleFont(15),
+        textAlign: 'center',
+        marginTop:10
     },
     buttonContainer:{
         width:'100%',
