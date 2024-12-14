@@ -35,14 +35,14 @@ request.interceptors.response.use(
     async (error) => {
       if(error?.response?.status == 401){
 
-        const authData = await StorageService.getData(USER_DETAILS_KEY)
-        dispatchService.dispatch(refreshTokenRequest(authData))
-        const newData = await StorageService.getData(USER_DETAILS_KEY)
+        // const authData = await StorageService.getData(USER_DETAILS_KEY)
+        // dispatchService.dispatch(refreshTokenRequest(authData))
+        // const newData = await StorageService.getData(USER_DETAILS_KEY)
 
-        // 3. Update the failed request config with the new token
-        console.log("\n\n\n\n\n\n\n\n\n\n\n old Token : ",authData.token)
-        console.log("\n\n\n\n\n\n\n\n\n\n\n new Token : ",newData.token)
-        error.config.headers['Authorization'] = `Bearer ${newData.token}`;
+        // // 3. Update the failed request config with the new token
+        // console.log("\n\n\n\n\n\n\n\n\n\n\n old Token : ",authData.token)
+        // console.log("\n\n\n\n\n\n\n\n\n\n\n new Token : ",newData.token)
+        // error.config.headers['Authorization'] = `Bearer ${newData.token}`;
         // 4. Retry the failed request with the new token
         // return request(error.config);
         // dispatchService.dispatch({ type: LOG_OUT_USER, payload: {} })

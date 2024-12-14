@@ -69,7 +69,7 @@ const MainApp = withLoader(()=>{
         const data: LoggedInUser|null = await StorageService.getData(USER_DETAILS_KEY);
         if (data && data.token) {
           dispatch(loadUserDataFromStore(data));
-          dispatch(refreshTokenRequest(data));
+          // dispatch(refreshTokenRequest(data));
           dispatch(getUserDetailsRequest({}))
         }
       } catch (error) {
