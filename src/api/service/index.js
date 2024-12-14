@@ -1,16 +1,21 @@
 import axios from 'axios';
 import { BASE_URL } from '../constants';
 import { showTost } from '../../utils/helper';
+import StorageService from '../../services/localStorageService';
+import { USER_DETAILS_KEY } from '../../utils/constants';
+import dispatchService from '../../store/dispatcherService';
+import { LOG_OUT_USER, refreshTokenRequest } from '../../store/actions/authAction';
 const request = axios.create({
   baseURL: BASE_URL,
 });
 
-const skipToken = ["/temp/users", "/signup", "/login", "/verify"]
+const skipToken = ["/temp/users/", "/signup/", "/login", "/verify", "/refresh/token"]
 request.interceptors.request.use(
-  (config) => {
+  async (config) => {
     console.log(`\n${config.method.toUpperCase()} \nRequest EndPoint: ${config.baseURL}${config.url}\n Data: %j`, config.data)
     if(!skipToken.includes(config.url)){
-      config.headers.Authorization = 'Bearer YOUR_AUTH_TOKEN';
+      const authData = await StorageService.getData(USER_DETAILS_KEY)
+      config.headers.Authorization = `Bearer ${authData.token}`;
     }
     return config;
   },
@@ -24,10 +29,24 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     (response) => {
       showTost({type:"success", header: "Success", message: response.data.message})
-      return response;
+      console.log("RESPONSE : :: ", response.data)
+      return response.data;
     },
-    (error) => {
-      console.log("Response ERROR : %j", JSON.stringify(error))
+    async (error) => {
+      if(error?.response?.status == 401){
+
+        // const authData = await StorageService.getData(USER_DETAILS_KEY)
+        // dispatchService.dispatch(refreshTokenRequest(authData))
+        // const newData = await StorageService.getData(USER_DETAILS_KEY)
+
+        // // 3. Update the failed request config with the new token
+        // console.log("\n\n\n\n\n\n\n\n\n\n\n old Token : ",authData.token)
+        // console.log("\n\n\n\n\n\n\n\n\n\n\n new Token : ",newData.token)
+        // error.config.headers['Authorization'] = `Bearer ${newData.token}`;
+        // 4. Retry the failed request with the new token
+        // return request(error.config);
+        // dispatchService.dispatch({ type: LOG_OUT_USER, payload: {} })
+      }
       if (error.response) {
         showTost({type:"error", header: "Error1", message: error.response.data})
       } else if (error.request) {

@@ -6,7 +6,7 @@ import PropTypes, { string } from 'prop-types';
 import fontSize from "../constants/fontSize";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const SocialLoginButton = ({social, onPress}:any) => {
+const SocialLoginButton = ({social="Google", onPress=()=>{}}:any) => {
     const { colors, translations } = useContext(ThemeContext)
     const styles = getStyle(colors)
     const renderSocialAuthImage = (social:string) => {
@@ -48,10 +48,6 @@ SocialLoginButton.protoType = {
     subMessage: PropTypes.string.isRequired
 }
 
-SocialLoginButton.defaultProps ={
-    message: "",
-    subMessage: ""
-}
 
 export default SocialLoginButton;
 

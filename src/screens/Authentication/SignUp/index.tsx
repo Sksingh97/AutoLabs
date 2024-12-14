@@ -9,7 +9,7 @@ import Vrs from "../../../components/verticalSpacer"
 import CustomButton from "../../../components/button"
 import { validateIndianPhoneNumber } from "../../../utils/helper"
 import { useDispatch, UseDispatch } from "react-redux"
-import { authRequest } from "../../../store/actions/authAction"
+import { createTempUserRequest } from "../../../store/actions/authAction"
 
 
 const SignUp = ({navigation}:any) => {
@@ -47,7 +47,7 @@ const SignUp = ({navigation}:any) => {
             hasError = true;
         }
         if(!hasError){
-            dispatch(authRequest({name:_name, mobile_number: _phone}))
+            dispatch(createTempUserRequest({name:_name, mobile_number: _phone}))
         }
     }
 

@@ -37,5 +37,46 @@ export default {
         invalidOtp: "Invalid Otp! Please enter {digit} digit OTP",
         updateMobileNumber: "Edit Mobile Number ?",
         resendCountDown: "Resend OTP In :"
+    },
+    setupScreen:{
+        back:"Back",
+        save: "Save",
+        create: "Create",
+        home:{
+            add: "Add",
+            select: "Select",
+            home: "Home",
+            name: "Name",
+            fullAddress:"Full Address",
+            subHeading: "Every smart home deserve a name. What would you like to call yours?",
+            subHeadingSelect: "Every home deserve a smart upgrade. select a home to make it smart?",
+            existingHome: "Your Homes"
+        },
+        floor:{
+            create: "Add",
+            floors: "Floors",
+            floor: "Floor",
+            name: "Name",
+            nameError: "Floor name is required !",
+            subHeading: "Lets begin with adding a floor. It's better to have floor to group rooms",
+        },
+        room:{
+            create: "Add",
+            rooms: "Rooms",
+            room: "Room",
+            name: "Name",
+            nameError: "Room name is required !",
+            done: "Done",
+            subHeading: "Add your rooms for this floor. Don't worry, you can always add more later.",
+        },
+        wellDone:{
+            title: "Well Done!",
+            message: "Congratulations! Your home is now ready to be have smart features. Start exploring and managing your smart space with ease.",
+            getStarted: "Get Started"
+        },
+    },
+    homeScreen: {
+        addDevice: "Add Device"       
     }
+
 }

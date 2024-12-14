@@ -9,11 +9,10 @@ import Vrs from "../../../components/verticalSpacer"
 import CustomButton from "../../../components/button"
 import CustomCheckBox from "../../../components/checkBox"
 import OtpInput from "../../../components/otpInput"
-import { validateIndianPhoneNumber } from "../../../utils/helper"
 import { OTP_LENGTH, OTP_RESEND_TIMER, USER_DETAILS_KEY } from "../../../utils/constants"
 import { useDispatch } from "react-redux"
-import { otpRequest, otpVerifyRequest, resendOTP } from "../../../store/actions/authAction"
 import StorageService from '../../../services/localStorageService';
+import { signupVerifyRequest,signupResendOTP, loginOtpRequest, loginVerifyRequest } from "../../../store/actions/authAction"
 
 const OTP = ({route, navigation}:any) => {
     const { name, mobile_number, is_login } = route.params;
@@ -56,7 +55,11 @@ const OTP = ({route, navigation}:any) => {
         if(rememberMe){
             StorageService.storeData(USER_DETAILS_KEY, {mobile_number: _phone, name:name})
         }
-        dispatch(otpVerifyRequest({name: _name, mobile_number: _phone, otp_value: _otp}))
+        if(is_login){
+            dispatch(loginVerifyRequest({name: _name, mobile_number: _phone, otp_value: _otp}))
+        }else{
+            dispatch(signupVerifyRequest({name: _name, mobile_number: _phone, otp_value: _otp}))
+        }
         
     }
 
@@ -71,11 +74,10 @@ const OTP = ({route, navigation}:any) => {
 
     const ResendOtp = () => {
         setTime(OTP_RESEND_TIMER);
-        console.log("IS LOGIN : : :", is_login)
         if(is_login){
-            dispatch(otpRequest({mobile_number: mobile_number}))
+            dispatch(loginOtpRequest({mobile_number: mobile_number}))
         } else {
-            dispatch(resendOTP({name:name, mobile_number: mobile_number}))
+            dispatch(signupResendOTP({name:name, mobile_number: mobile_number}))
         }
     }
 

@@ -53,20 +53,24 @@ import { navigationRef } from './src/navigation/navigationService';
 import Toast from 'react-native-toast-message';
 import StorageService from './src/services/localStorageService';
 import { USER_DETAILS_KEY } from './src/utils/constants';
-import { loadUserDetails } from './src/store/actions/authAction';
+// import { loadUserDetails } from './src/store/actions/authAction';
 import { LoggedInUser } from './src/interfaces/userInfo';
+import { getUserDetailsRequest, loadUserDataFromStore, refreshTokenRequest } from './src/store/actions/authAction';
+import withLoader from './src/hoc/withLoader';
 
-const MainApp = () => {
+
+const MainApp = withLoader(()=>{  
   const dispatch = useDispatch();
   const [isAppReady, setAppReady] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        const data: LoggedInUser | null = await StorageService.getData(USER_DETAILS_KEY);
+        const data: LoggedInUser|null = await StorageService.getData(USER_DETAILS_KEY);
         if (data && data.token) {
-          dispatch(loadUserDetails(data));
-          console.log('User details loaded from storage:', data);
+          dispatch(loadUserDataFromStore(data));
+          // dispatch(refreshTokenRequest(data));
+          dispatch(getUserDetailsRequest({}))
         }
       } catch (error) {
         console.error('Error retrieving user details from storage:', error);
@@ -80,7 +84,7 @@ const MainApp = () => {
   if (!isAppReady) {
     return null;
   }else {
-    StorageService.clearStorage()
+    // StorageService.clearStorage()
   }
 
   return (
@@ -91,14 +95,15 @@ const MainApp = () => {
       </NavigationContainer>
     </ThemeProvider>
   );
-};
+});
 
 function App(): JSX.Element {
   return (
     <Provider store={store}>
-      <MainApp />
+      <MainApp/>
     </Provider>
   );
 }
 
 export default App;
+

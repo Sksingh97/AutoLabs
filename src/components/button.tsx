@@ -1,18 +1,23 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useContext} from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import PropType from 'prop-types'
 import { ThemeContext } from '../provider/theme';
 import { deviceWidth } from '../utils/helper';
 import fontSize from '../constants/fontSize';
+import { Add, Plus } from '../constants/images';
+import { mvs } from 'react-native-size-matters';
 
-const CustomButton = ({title, type, onPress, buttonStyle, isDisabled}:any) => {
+const CustomButton = ({showIcon = false, title="lable", type="Primary", onPress=()=>{}, buttonStyle={}, isDisabled=false}:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors)
     return (
-        <View style={[styles.container, isDisabled?styles.disabled:{}]}>
-            <TouchableOpacity style={styles.button} onPress={onPress} disabled={isDisabled}>
-                <Text style={styles.text}>{title}</Text>                                                                                                       
+        <View style={[styles.container, buttonStyle, isDisabled?styles.disabled:{}]}>
+            <TouchableOpacity style={[styles.button,buttonStyle, {borderRadius: buttonStyle.height?buttonStyle.height/2:22}]} onPress={onPress} disabled={isDisabled}>
+                <View style={[styles.buttonInternalContainer, {width: buttonStyle.width? buttonStyle.width: deviceWidth()}]}>
+                    {showIcon&&(<Add width={mvs(20)} height={mvs(20)} fill={colors.TextWhite} stroke={colors.TextWhite} />)}
+                    <Text style={styles.text}>{title}</Text>  
+                </View>
+                                                                                                                     
             </TouchableOpacity>
         </View>
         
@@ -31,13 +36,6 @@ CustomButton.propType = {
     }),
     isDisabled: PropType.bool
 }
-CustomButton.defaultProp = {
-    title: "lable",
-    type: "Primary",
-    onPress: ()=>{},
-    buttonStyle: {},
-    isDisabled: false
-}
 
 const getStyle = (colors:any) => StyleSheet.create({
     container:{
@@ -52,7 +50,6 @@ const getStyle = (colors:any) => StyleSheet.create({
         height:'100%',
         width: deviceWidth()-20,
         backgroundColor:colors.Button.Primary,
-        borderRadius: 22,
         justifyContent:'center',
         alignItems:'center',
         borderColor: colors.Border,
@@ -65,6 +62,11 @@ const getStyle = (colors:any) => StyleSheet.create({
     },
     disabled:{
         opacity:.5
+    },
+    buttonInternalContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center'
     }
 })
 

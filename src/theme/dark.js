@@ -3,6 +3,7 @@ export default {
     Text: '#fff',
     Border: '#35383F',
     Secondary: '#1F222A',
+    PrimaryShade: '#C2DEFF',
     Button: {
         Primary: '#405FF2'
     },

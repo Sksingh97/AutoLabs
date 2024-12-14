@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import fontSize from "../constants/fontSize";
 import Vrs from "./verticalSpacer";
 
-const Heading = ({message, subMessage}:any) => {
+const Heading = ({message="", subMessage=""}:any) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors)
     return (
@@ -27,10 +27,6 @@ Heading.protoType = {
     subMessage: PropTypes.string.isRequired
 }
 
-Heading.defaultProps ={
-    message: "",
-    subMessage: ""
-}
 
 export default Heading
 

@@ -1,6 +1,16 @@
 import { Platform, Dimensions } from "react-native";
 import Toast from 'react-native-toast-message';
+import { PixelRatio } from 'react-native';
+// import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-dimensions';
+const scale = PixelRatio.get(); // Device pixel ratio
 
+const { width } = Dimensions.get('window');
+// export {
+//     hp,
+//     wp
+// }
+export const scaleFont = (size) => size * PixelRatio.getFontScale();
+export const scaleSize = (size) => size * scale;
 export const isIos = () => {
     return Platform.OS != "android"
 }
@@ -30,3 +40,9 @@ export const showTost = ({type="success", header="", message=""}) => {
         visibilityTime: 2000
       });
 }
+
+export const getColumns = () => {
+    if (width > 1200) return 4; // 4 columns for large screens (e.g., tablets)
+    if (width > 800) return 3;  // 3 columns for medium screens (e.g., larger phones)
+    return 2; // 2 columns for small screens (e.g., small phones)
+  };
