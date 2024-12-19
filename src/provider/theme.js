@@ -26,6 +26,7 @@ const ThemeProvider = ({ children }) => {
   };
 
   const getColor = () => {
+    return Platform.OS == 'ios'? light: dark;
     switch (theme) {
       case 'LIGHT':
           return light

@@ -17,6 +17,7 @@ import CreateFloor from '../screens/AccountSetup/CreateFloor';
 import WellDone from '../screens/AccountSetup/WellDone';
 import { Dimensions } from 'react-native';
 import { deviceWidth } from '../utils/helper';
+import AddDevice from '../screens/AddDeviceFlow/AddDevice';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,10 +28,19 @@ const MainTab = () => {
         screenOptions={{
           tabBarPosition: deviceWidth() < 600 ? 'bottom' : 'left',
           headerShown: false,
-          animation : 'shift'
+          animation : 'shift',
         }}
+        initialRouteName='AddDeviceFlow'
         >
             <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen
+              name="AddDeviceFlow"
+              component={AddDeviceStack} // Use ProfileStack here
+              options={{
+                tabBarStyle: { display: 'none' },  // Ensure the tab bar is shown here
+                tabBarButton: ()=>null,
+              }}
+            />
         </Tab.Navigator>
 
     )
@@ -48,6 +58,17 @@ const AuthStack = () => {
           <Stack.Screen name="OTP" component={OTP} />
           <Stack.Screen name="TermOfService" component={TermOfService} />
           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+        </Stack.Navigator>
+  )
+}
+
+const AddDeviceStack = () => {
+  return (
+    <Stack.Navigator
+        screenOptions={{headerShown:false}}
+        initialRouteName='AddDevice'
+        >
+          <Stack.Screen name="AddDevice" component={AddDevice} />
         </Stack.Navigator>
   )
 }

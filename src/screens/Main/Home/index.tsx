@@ -21,7 +21,7 @@ const Home = ({route, navigation}:any) => {
                 <DropDown/>
                 <View style={styles.iconContainer}>
                     <Bot width={mvs(48)} height={mvs(48)} fill={colors.Text} stroke={colors.Text} />
-                    <AlertIcon width={mvs(48)} height={mvs(48)}  />
+                    <AlertIcon width={mvs(48)} height={mvs(48)}   stroke={colors.Text}/>
                 </View>
             </View>
             <View style={styles.weatherContainer}>
@@ -51,7 +51,7 @@ const Home = ({route, navigation}:any) => {
             </View>
             <Vrs height={vs(20)}/>
             <View style={styles.allDeviceContainer}>
-                <Text>All Devices</Text>
+                <Text style={styles.text}>All Devices</Text>
                 <Vector width={mvs(20)} height={mvs(20)} fill={colors.Text} stroke={colors.Text} />
             </View>
             <Vrs height={vs(20)}/>
@@ -86,21 +86,23 @@ const Home = ({route, navigation}:any) => {
             <Vrs height={vs(20)}/>
             <View style={styles.devicesContainer}>
                 <View style={styles.noDataContainer}>
-                    <NoData width={mvs(120)} height={mvs(117)} />
+                    <NoData width={mvs(120)} height={mvs(117)} fill={colors.Text}/>
                 </View>
                 <View style={styles.detailContainer}>
                     <Vrs height={vs(20)}/>
-                    <Text>No Device</Text>
+                    <Text style={styles.text}>No Device</Text>
                     <Vrs height={vs(20)}/>
-                    <Text>You haven't added a device yet.</Text>
+                    <Text style={styles.text}>You haven't added a device yet.</Text>
                 </View>
                 <Vrs height={vs(20)}/>
                 <View style={styles.buttonContainer}>
-                    <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{}}/>
+                    <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
+                        navigation.navigate('AddDeviceFlow')
+                    }}/>
                 </View>
             </View>
             <View style={styles.buttonGroupContainer}>
-                <TouchableOpacity style={[styles.roundButtonContainer, {backgroundColor: colors.Button.Shade}]}>
+                <TouchableOpacity style={[styles.roundButtonContainer, {backgroundColor: colors.Border}]}>
                     <MicIcon width={mvs(28)} height={mvs(28)} fill={colors.Button.Primary}  />
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.roundButtonContainer, {backgroundColor: colors.Button.Primary}]}>
@@ -270,6 +272,9 @@ const getStyles = (colors) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: vs(28)
+    },
+    text:{
+        color: colors.Text
     }
 
 })
