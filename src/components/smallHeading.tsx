@@ -1,0 +1,5 @@
+const SmallHeading = ({message=""}) => {
+    return (
+        
+    )
+}

@@ -50,9 +50,10 @@ request.interceptors.response.use(
       if (error.response) {
         showTost({type:"error", header: "Error1", message: error.response.data})
       } else if (error.request) {
-        showTost({type:"error", header: "Error2", message: "Error"})
+        console.log(error.request)
+        showTost({type:"error", header: "Error2", message: error.request})
       } else {
-        showTost({type:"error", header: "Error3", message: "Error"})
+        showTost({type:"error", header: "Error3", message: error.request})
       }
   
       return Promise.reject(error);

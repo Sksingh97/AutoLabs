@@ -46,3 +46,7 @@ export const getColumns = () => {
     if (width > 800) return 3;  // 3 columns for medium screens (e.g., larger phones)
     return 2; // 2 columns for small screens (e.g., small phones)
   };
+
+export const generateRandomNumber = (min = 0, max = 1) => {
+return Math.random() * (max - min) + min;
+};

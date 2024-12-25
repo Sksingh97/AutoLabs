@@ -14,6 +14,7 @@ import { ThemeContext } from "../provider/theme"
 import { isIos } from "../utils/helper"
 import fontSize from "../constants/fontSize"
 import PropTypes from 'prop-types';
+import { mvs, s, vs } from "react-native-size-matters/extend"
 
 const Header = ({LeftIcons=[], Title="", RightIcons=[]}:any) => {
     const {colors} = useContext(ThemeContext)
@@ -54,39 +55,40 @@ export default Header
 
 const getStyle = (colors:any) => StyleSheet.create({
     container: {
-        height:50,
+        height:vs(72),
         width: '100%',
         backgroundColor: colors.Primary,
-        marginTop: isIos()?25:0,
         flexDirection:'row',
-        justifyContent:'space-between'
+        justifyContent:'space-between',
     },
     LeftIconContainer:{
         width: "25%",
         paddingLeft: 20,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     RightIconContainer:{
         width: "25%",
-        paddingLeft: 24,
-        flexDirection: 'row-reverse'
+        paddingRight: s(24),
+        flexDirection: 'row-reverse',
+        alignItems: 'center'
     },
     CenterTitleContainer:{
         width: "50%",
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     TitleText:{
         color: colors.Text,
-        fontSize: fontSize.H2
+        fontSize: mvs(fontSize.H2)
     },
     LeftIconButton:{
-        height:50,
+        height:vs(50),
         justifyContent: 'center',
         alignContent: 'center',
     },
     RightIconButton:{
-        height:50,
+        height:vs(50),
         justifyContent: 'center',
         alignContent: 'center',
         

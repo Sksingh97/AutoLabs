@@ -35,6 +35,14 @@
 	<string></string>
 	<key>UILaunchStoryboardName</key>
 	<string>BootSplash</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Bluetooth access is required in order search nearby automation devices for device configuration</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth access required to stablish connection and configure automation devices</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to scan for Wi-Fi networks of our devices.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to scan for Wi-Fi networks of our devices.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

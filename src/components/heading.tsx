@@ -4,6 +4,7 @@ import { useContext } from "react"
 import PropTypes from 'prop-types';
 import fontSize from "../constants/fontSize";
 import Vrs from "./verticalSpacer";
+import React from "react";
 
 const Heading = ({message="", subMessage=""}:any) => {
     const {colors} = useContext(ThemeContext)

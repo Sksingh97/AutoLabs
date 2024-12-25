@@ -18,6 +18,8 @@ import WellDone from '../screens/AccountSetup/WellDone';
 import { Dimensions } from 'react-native';
 import { deviceWidth } from '../utils/helper';
 import AddDevice from '../screens/AddDeviceFlow/AddDevice';
+import WifiScanner from '../screens/AddDeviceFlow/WifiScanner';
+import AddDeviceScan from '../screens/AddDeviceFlow/AddDevice';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,7 +37,7 @@ const MainTab = () => {
             <Tab.Screen name="Home" component={Home} />
             <Tab.Screen
               name="AddDeviceFlow"
-              component={AddDeviceStack} // Use ProfileStack here
+              component={AddDeviceScan} // Use ProfileStack here
               options={{
                 tabBarStyle: { display: 'none' },  // Ensure the tab bar is shown here
                 tabBarButton: ()=>null,

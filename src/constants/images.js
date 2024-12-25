@@ -33,6 +33,11 @@ import Wind from "../assets/images/wind.svg"
 import Vector from "../assets/images/vector.svg"
 import NoData from "../assets/images/noData.svg"
 import MicIcon from "../assets/images/micIcon.svg"
+import QrScan from "../assets/images/qr.svg"
+import Bulb from "../assets/images/bulb.svg"
+import Device from "../assets/images/device.svg"
+import Wifi from "../assets/images/wifi.svg"
+import Bluetooth from "../assets/images/bluetooth.svg"
 export {
     LeftArrow,
     Google,
@@ -68,5 +73,10 @@ export {
     Wind,
     Vector,
     NoData,
-    MicIcon
+    MicIcon,
+    QrScan,
+    Bulb,
+    Device,
+    Wifi,
+    Bluetooth
 }
