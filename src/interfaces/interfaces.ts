@@ -4,7 +4,7 @@ export type LoggedInUser = {
     token: string;
     ref_token: string; // Optional field
   };
-  
+
 export interface DropdownItem {
     label: string;
     value: string;
