@@ -54,7 +54,7 @@ import Toast from 'react-native-toast-message';
 import StorageService from './src/services/localStorageService';
 import { USER_DETAILS_KEY } from './src/utils/constants';
 // import { loadUserDetails } from './src/store/actions/authAction';
-import { LoggedInUser } from './src/interfaces/userInfo';
+import { LoggedInUser } from './src/interfaces/interfaces';
 import { getUserDetailsRequest, loadUserDataFromStore, refreshTokenRequest } from './src/store/actions/authAction';
 import withLoader from './src/hoc/withLoader';
 

@@ -37,7 +37,7 @@ const RadarScanner = ({ width, scannedDevices, onDevicePress }) => {
         <TouchableOpacity
           key={index}
           onPress={() => onDevicePress(device)}
-          style={{ overflow:'visible', position: 'absolute', left: x, top: y, transform: [{ translateX: -15 }, { translateY: -15 }]}}
+          style={{ justifyContent: 'center',alignItems: 'center', position: 'absolute', left: x, top: y, transform: [{ translateX: -15 }, { translateY: -15 }]}}
         >
           {device.render()}
         </TouchableOpacity>

@@ -1,6 +1,7 @@
 import WifiManager from 'react-native-wifi-reborn';
 import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
+import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box';
 
 class WifiService {
     constructor() {
@@ -36,13 +37,48 @@ class WifiService {
     }
 
     /**
+     * Checks if location services are enabled and prompts the user to enable them if not.
+     * @returns {Promise<boolean>} - True if location services are enabled, false otherwise.
+     */
+    async ensureLocationEnabled() {
+        if (Platform.OS === 'android') {
+            try {
+                const result = await LocationServicesDialogBox.checkLocationServicesIsEnabled({
+                    message: `
+                        <h2>Enable Location</h2>
+                        <p>Location services are required to scan and connect to Wi-Fi networks. Please enable them.</p>
+                    `,
+                    ok: 'Enable',
+                    cancel: 'Cancel',
+                }).then((status) => status.enabled);
+
+                return result;
+            } catch (error) {
+                console.error('Error checking location services:', error);
+                return false;
+            }
+        } else {
+            // iOS doesn't support programmatic enabling of location services
+            Alert.alert(
+                'Location Services Disabled',
+                'Please enable location services in settings.',
+                [{ text: 'OK' }]
+            );
+            return false;
+        }
+    }
+
+    /**
      * Scans for available Wi-Fi networks.
      * @returns {Promise<Array>} - List of available Wi-Fi networks.
      */
     async scanWifiNetworks() {
         try {
             const networks = await this.wifiManager.reScanAndLoadWifiList();
-            return networks;
+            if(Array.isArray(networks)){
+                return networks
+            }
+            throw Error(networks)
         } catch (error) {
             console.error('Error scanning Wi-Fi networks:', error);
             return [];
@@ -58,11 +94,7 @@ class WifiService {
         const regex = /^AUTO-LABS-/;
         try {
             const networks = await this.scanWifiNetworks();
-            console.log("Network: ", networks)
-            if (networks == null) {
-                return []
-            }
-            return networks.filter((network) => regex.test(network.SSID))|| [];
+            return networks.filter((network) => regex.test(network.SSID)) || [];
         } catch (error) {
             console.error('Error scanning for specific Wi-Fi:', error);
             return null;

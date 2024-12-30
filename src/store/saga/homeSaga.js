@@ -1,6 +1,6 @@
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { createHomeSuccess, createHomeFailure, CREATE_HOME_REQUEST, getHomeSuccess, getHomeFailure, GET_HOME_REQUEST } from '../actions/homeActions';
-import { CreateHome, GetAllHomes } from '../../api/service/homeService';
+import { createHomeSuccess, createHomeFailure, CREATE_HOME_REQUEST, getHomeSuccess, getHomeFailure, GET_HOME_REQUEST, getHomeDetailsSuccess, getHomeDetailsFail, GET_HOME_DETAILS_FAILURE, GET_HOME_DETAILS_REQUEST } from '../actions/homeActions';
+import { CreateHome, GetAllHomes, GetHomeDetails } from '../../api/service/homeService';
 import { INCREMENT_LOADING, DECREMENT_LOADING } from '../actions/loadingAction';
 import { navigate } from '../../navigation/navigationService';
 
@@ -33,7 +33,20 @@ function* getHomeSaga(action) {
   }
 }
 
+function* getHomeDetials(action) {
+  try {
+    yield put({type: INCREMENT_LOADING, payload:{title: "Getting Home Details..."}})
+    const response = yield call(GetHomeDetails, action.payload.id);
+    yield put(getHomeDetailsSuccess(response));
+  } catch (error) {
+    yield put(getHomeDetailsFail(error.message));
+  } finally {
+    yield put({type: DECREMENT_LOADING})
+  }
+}
+
 export function* watchHomeSaga() {
   yield takeEvery(CREATE_HOME_REQUEST, createHomeSaga);
   yield takeEvery(GET_HOME_REQUEST, getHomeSaga);
+  yield takeEvery(GET_HOME_DETAILS_REQUEST, getHomeDetials);
 }

@@ -10,16 +10,19 @@ import Vrs from "../../../components/verticalSpacer";
 import Heading from "../../../components/heading";
 import WifiService from "../../../services/ wifiService";
 import { generateRandomNumber } from "../../../utils/helper";
+import { useDispatch, useSelector } from "react-redux";
+import { closeAddDeviceFlow, selectDeviceToConfig } from "../../../store/actions/addDeviceAction";
 
 const { width } = Dimensions.get('window');
 const radarRadius = width * 0.4;
 
 
-const AddDeviceScan = () => {
-  const { colors, translation } = useContext(ThemeContext);
+const AddDeviceScan = ({navigation}:any) => {
+  const { colors, translations } = useContext(ThemeContext);
   const styles = getStles(colors);
   const [wifiList, setWifiList] = useState([]);
   const wifiHelper = new WifiService();
+  const dispatch = useDispatch();
     /**
      * Function to handle Wi-Fi scanning.
      */
@@ -33,7 +36,11 @@ const AddDeviceScan = () => {
                     return;
                 }
             }
-
+            const locationEnabled = await wifiHelper.ensureLocationEnabled();
+            if (!locationEnabled) {
+                console.log('Location services disabled. Cannot proceed.');
+                return;
+            }
             // Scan Wi-Fi networks
             const networks = await wifiHelper.scanForSpecificWifi();
             console.log("Networks: ", networks)
@@ -45,6 +52,7 @@ const AddDeviceScan = () => {
                   id: index,
                   angle: angle,
                   distance: distance,
+                  mac: item.BSSID,
                   ssid: item.SSID,
                   render: () => (
                     <>
@@ -68,14 +76,21 @@ const AddDeviceScan = () => {
         }
     };
   useLayoutEffect(() => {
-    setTimeout(()=>{
-      scanWifi();
-    },3000);
+    if(Platform.OS == 'android'){
+      setTimeout(()=>{
+        scanWifi();
+      },3000);
+    }else {
+      setTimeout(()=>{
+        handleDevicePress({id:1, ssid:'AUTO-LABS-000001', mac:'86:f3:eb:0a:9f:9f'})
+      },3000);
+      
+    }
   }, []);
 
   const renderBack =() =>{
     return (
-      <TouchableOpacity onPress={()=>{}}>
+      <TouchableOpacity onPress={()=>{dispatch(closeAddDeviceFlow())}}>
           <LeftArrow width={25} height={25} fill={colors.Text} stroke={colors.Text} />
       </TouchableOpacity>
     )
@@ -88,16 +103,27 @@ const AddDeviceScan = () => {
       </TouchableOpacity>
     )
   }
-  const handleDevicePress = (device) => {
-    console.log('Device pressed:', device);
+  const handleDevicePress = ({id, ssid, mac}:any) => {
+    dispatch(selectDeviceToConfig({id,ssid,mac}));
+    navigation.push('ConfigDevice')
   };
 
+  const buttons = [
+    {
+      title: translations.addDeviceScan.nearBy,
+      onPress:()=>{}
+    },
+    {
+      title: translations.addDeviceScan.manual,
+      onPress:()=>{}
+    }
+  ]
 
   return(
     <SafeAreaView style={styles.container}>
       <Header LeftIcons={[renderBack]} Title={"Add Device"} RightIcons={[renderScanQr]}/>
       <Vrs height={vs(8)}/>
-      <GroupButton/>
+      <GroupButton buttons={buttons}/>
       <Vrs height={vs(36)}/>
        
       <Vrs height={vs(12)}/>
@@ -109,7 +135,7 @@ const AddDeviceScan = () => {
             <View style={styles.infoIcons}>
               <Bluetooth  width={15} height={15} />
             </View>
-            <Text  style={styles.infoText}> Turn on your Wifi & Bluetooth to connect</Text>
+            <Text  style={styles.infoText}> {translations.addDeviceScan.turnOnInfo}</Text>
           </View>
       </View>
       <Vrs height={vs(36)}/>
@@ -121,9 +147,9 @@ const AddDeviceScan = () => {
         />
       </View>
       <View style={styles.questionContainer}>
-        <Text style={styles.questionText}>Can't find your device?</Text>
+        <Text style={styles.questionText}>{translations.addDeviceScan.cantFind}</Text>
         <Vrs height={vs(16)}/>
-        <TouchableOpacity><Text style={styles.questionButton}>Learn More</Text></TouchableOpacity>
+        <TouchableOpacity><Text style={styles.questionButton}>{translations.addDeviceScan.learnMore}</Text></TouchableOpacity>
       </View>
     </SafeAreaView>
   )

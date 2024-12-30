@@ -22,7 +22,8 @@ import Livingroom from "../assets/images/livingRoom.svg"
 import Studyroom from "../assets/images/study.svg"
 import WellDoneImage from "../assets/images/welldone.svg"
 import Close from "../assets/images/close.svg"
-import DownUp from "../assets/images/downUp.svg"
+import Down from "../assets/images/down.svg"
+import Up from "../assets/images/up.svg"
 import Bot from "../assets/images/bot.svg"
 import WeatherBg from "../assets/images/weatherBg.svg"
 import AlertIcon from "../assets/images/alertIcon.svg"
@@ -63,7 +64,8 @@ export {
     Studyroom,
     WellDoneImage,
     Close,
-    DownUp,
+    Down,
+    Up,
     Bot,
     WeatherBg,
     AlertIcon,

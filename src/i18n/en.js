@@ -77,6 +77,12 @@ export default {
     },
     homeScreen: {
         addDevice: "Add Device"       
+    },
+    addDeviceScan: {
+        nearBy: 'Nearby Devices',
+        manual: 'Manual Entry',
+        turnOnInfo: 'Turn on your Wifi & Bluetooth to connect',
+        cantFind: "Can't find your device?",
+        learnMore: "Learn More",
     }
-
 }

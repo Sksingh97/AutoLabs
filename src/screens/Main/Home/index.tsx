@@ -1,24 +1,89 @@
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { deviceHeight, deviceWidth, scaleSize } from "../../../utils/helper";
 import { vs, s, mvs } from 'react-native-size-matters/extend';
 import DropDown from "../../../components/dropDown";
 import { Add, AlertIcon, AQI, Bot, CloudSun, MicIcon, NoData, Vector, WaterDrop, WeatherBg, Wind } from "../../../constants/images";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../../../provider/theme";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ms } from "react-native-size-matters";
 import Vrs from "../../../components/verticalSpacer";
 import CustomButton from "../../../components/button";
+import { initiateAddDeviceFlow } from "../../../store/actions/addDeviceAction";
+import { getFloorRequest } from "../../../store/actions/floorAction";
+import { getRoomRequest } from "../../../store/actions/roomAction";
+import { getHomeDetailsRequest, getHomeRequest } from "../../../store/actions/homeActions";
+import React from "react";
 
 
 const Home = ({route, navigation}:any) => {
-    const {colors, translations} = useContext(ThemeContext)
+    const {colors, translations} = useContext(ThemeContext);
+    const { homes, homeDetials } = useSelector((state:any) => state.home);
+    const [ selectedFloor, setSelectedFloor ] = useState(0);
+    const [ selectedRoom, setSelectedRoom ] = useState(0);
+    const [ selectedHome, setSelectedHoom ] = useState(0);
     const styles = getStyles(colors);
     const dispatch = useDispatch();
+    useEffect(()=>{
+        dispatch(getHomeRequest())
+    },[])
+    useEffect(()=>{
+        if(selectedHome != 0){
+            dispatch(getHomeDetailsRequest(selectedHome))
+        }
+    },[selectedHome])
+    useEffect(()=>{
+        if(selectedFloor == 0 && homeDetials.length>0){
+            setSelectedFloor(homeDetials[0].id)
+        }
+    },[homeDetials])
+    useEffect(()=>{
+        if(selectedFloor != 0 && homeDetials.length>0){
+            const rooms = getSelectedFloorRooms()
+            if(rooms.length>0) {
+                setSelectedRoom(rooms[0].id)
+            }
+        }
+    },[selectedFloor])
+    useEffect(()=>{
+        if(homes.length>0){
+            setSelectedHoom(homes[0].id)
+        }
+        //fetch floors 
+        // dispatch(getFloorRequest())
+        // //fetch rooms
+        // dispatch(getRoomRequest())
+    },[homes]);
+
+    const renderFloor = ({item}) => {
+        return (
+            <TouchableOpacity onPress={()=>{setSelectedFloor(item.id)}} style={[styles.floorContainer, selectedFloor==item.id?styles.active:{}]}>
+                <Text style={[styles.floorText, selectedFloor==item.id?styles.textActive:{}]}>{item.name}</Text>
+            </TouchableOpacity>
+        )
+    }
+
+    const renderRooms = ({item}) => {
+        return (
+            <TouchableOpacity onPress={()=>{setSelectedRoom(item.id)}} style={[styles.roomContainer, styles.shadowBox, selectedRoom==item.id?styles.active:{}]}>
+                <Text style={[styles.roomText, selectedRoom==item.id?styles.textActive:{}]}>
+                    {item.name}
+                </Text>
+            </TouchableOpacity>
+        )
+    }
+
+    const getSelectedFloorRooms = () => {
+        if(homeDetials) {
+            const floor = homeDetials.filter(item=>item.id==selectedFloor);
+            return floor.length>0?floor[0].rooms:[]
+        }
+       return []
+    }
     return (
         <SafeAreaView style={styles.containr}>
             <View style={styles.headerContainer}>
-                <DropDown/>
+                <DropDown data={homes} onSelect={(item)=>{setSelectedHoom(item.id)}}/>
                 <View style={styles.iconContainer}>
                     <Bot width={mvs(48)} height={mvs(48)} fill={colors.Text} stroke={colors.Text} />
                     <AlertIcon width={mvs(48)} height={mvs(48)}   stroke={colors.Text}/>
@@ -56,32 +121,25 @@ const Home = ({route, navigation}:any) => {
             </View>
             <Vrs height={vs(20)}/>
             <View style={styles.floorListContainer}>
-                <View style={styles.floorContainer}>
-                    <Text style={styles.floorText}>Floor 1</Text>
-                </View>
-                <View style={styles.floorContainer}>
-                    <Text style={styles.floorText}>Floor 2</Text>
-                </View>
-                <View style={styles.floorContainer}>
-                    <Text style={styles.floorText}>Floor 3</Text>
-                </View>
+                <FlatList
+                    data={homeDetials}
+                    renderItem={renderFloor}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.floorListContainer} // Adjusted styles to remove blank space
+                />
             </View>
+            {/* <Vrs height={vs(10)}/> */}
             <View style={styles.roomListContainer}>
-                <View style={[styles.roomContainer, styles.shadowBox]}>
-                    <Text style={styles.roomText}>
-                        All Rooms
-                    </Text>
-                </View>
-                <View style={[styles.roomContainer, styles.shadowBox]}>
-                    <Text style={styles.roomText}>
-                        All Rooms
-                    </Text>
-                </View>
-                <View style={[styles.roomContainer, styles.shadowBox]}>
-                    <Text style={styles.roomText}>
-                        All Rooms
-                    </Text>
-                </View>
+                <FlatList
+                    data={getSelectedFloorRooms()}
+                    renderItem={renderRooms}
+                    keyExtractor={(item) => item.id.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.roomListContainer} // Adjusted styles to remove blank space
+                />
             </View>
             <Vrs height={vs(20)}/>
             <View style={styles.devicesContainer}>
@@ -97,7 +155,7 @@ const Home = ({route, navigation}:any) => {
                 <Vrs height={vs(20)}/>
                 <View style={styles.buttonContainer}>
                     <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
-                        navigation.navigate('AddDeviceFlow')
+                        dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
                     }}/>
                 </View>
             </View>
@@ -173,11 +231,15 @@ const getStyles = (colors) => StyleSheet.create({
         fontWeight: 'bold'
     },
     floorListContainer:{
-        flexDirection:'row',
-        paddingLeft: s(20)
+        paddingVertical: 0,
+        margin:0,
+        paddingLeft: s(10),
+        height: vs(20),
+        width: deviceWidth(),
+        // alignItems: 'center'
     },
     floorContainer:{
-        width:s(70),
+        width: 'auto',
         height:vs(20),
         backgroundColor: colors.Border,
         // borderTopStartRadius: s(20),
@@ -195,15 +257,19 @@ const getStyles = (colors) => StyleSheet.create({
         color: colors.Text
     },
     roomListContainer: {
-        height: vs(40),
-        width: '90%',
-        marginHorizontal: s(20),
-        alignItems:'center',
-        flexDirection:'row'
+        height: vs(50),
+        paddingVertical: 0,
+        margin:0,
+        paddingLeft: s(10),
+        width: deviceWidth(),
+        paddingTop: vs(5),
+        // backgroundColor: 'red'
+        // alignItems:'center',
+        overflow:'visible'
     },
     roomContainer: {
         height: vs(30),
-        width: s(100),
+        // width: s(100),
         flexDirection:'row',
         backgroundColor: colors.Primary,
         alignItems: 'center',
@@ -275,6 +341,12 @@ const getStyles = (colors) => StyleSheet.create({
     },
     text:{
         color: colors.Text
-    }
+    },
+    active:{
+        backgroundColor: colors.Button.Primary
+    },
+    textActive: {
+        color: colors.TextWhite
+    },
 
 })

@@ -24,7 +24,7 @@ const CreateHome = ({route, navigation}:any) => {
     const [addressError, setHomeAddressError] = useState("");
     const styles = getStyles(colors);
     const dispatch = useDispatch();
-    const {data} = useSelector((state:any) => state.home);
+    const {homes} = useSelector((state:any) => state.home);
     const [createHomeFlag, setCreateHomeFlag] = useState(false)
 
     useEffect(() => {
@@ -118,7 +118,7 @@ const CreateHome = ({route, navigation}:any) => {
                     </Text>
                 </View>
                 <FlatList
-                data={[{name: "Add Home", id:"-STATIC-"}, ...data]}
+                data={[{name: "Add Home", id:"-STATIC-"}, ...homes]}
                 numColumns={numColumns}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}

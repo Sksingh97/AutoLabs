@@ -61,7 +61,7 @@ const InputField = ( {
     return (
         <View style = {[styles.container, containerStyle]}>
             <View style={styles.lableContainer}>
-                <Text>{label} {isMandatory?'*':''}</Text>
+                <Text style={styles.text}>{label} {isMandatory?'*':''}</Text>
             </View>
             <View style={styles.fieldContainer}>
                 <View>
@@ -139,5 +139,8 @@ const getStyles = (colors:any) => StyleSheet.create({
         backgroundColor:colors.Button.Primary, 
         padding:10, 
         borderRadius:25
+    },
+    text:{
+        color: colors.Text
     }
 })

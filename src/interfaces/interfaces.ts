@@ -5,3 +5,8 @@ export type LoggedInUser = {
     ref_token: string; // Optional field
   };
   
+export interface DropdownItem {
+    label: string;
+    value: string;
+  }
+  

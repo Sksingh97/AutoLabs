@@ -14,6 +14,7 @@ export const GET_USER = "/user"
 
 //Home
 export const HOME = "/home/"
+export const HOME_DETAILS = "/all/appliances/{HOME_ID}"
 
 //Floor
 export const FLOOR = "/floor/"

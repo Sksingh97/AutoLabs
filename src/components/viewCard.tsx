@@ -15,7 +15,7 @@ const ViewCard = ({renderIcon=()=>{}, title, isCheck, onPress, disabled=false}:a
                 {renderIcon()}
             </View>
             <View style={styles.labelContainer}>
-                <Text>{title}</Text>
+                <Text style={styles.text}>{title}</Text>
             </View>
             {isCheck && (
                 <View style={styles.checkedImageContainer}>
@@ -55,5 +55,8 @@ const getStyle = (colors:any) => StyleSheet.create({
         position:'absolute',
         top:10,
         right:10
+    },
+    text:{
+        color: colors.Text
     }
 })

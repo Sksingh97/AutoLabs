@@ -1,24 +1,22 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Animated, StyleSheet, Text, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native"
 import { s, vs, mvs } from "react-native-size-matters/extend"
 import { ThemeContext } from "../provider/theme"
-import { DownUp } from "../constants/images"
+import { Down } from "../constants/images"
 
-const DropDown = () =>{
+const DropDown = ({data=[], onSelect=(item)=>{}}) =>{
     const {colors, translations} = useContext(ThemeContext)
     const styles = getStyles(colors);
-    const [selectedValue, setSelectedValue] = useState({title:"Select An Option", value:0})
+    const [selectedValue, setSelectedValue] = useState({name:"Select An Option", id:0})
     const [rotation] = useState(new Animated.Value(0)); // Initial value for rotation
     const [opacityAnim] = useState(new Animated.Value(0));
     const [translateY] = useState(new Animated.Value(10));
     const [showList, setShowList] = useState(false);
-    const data = [
-        {title: "Home 1", value: 1},
-        {title: "Home 2", value: 2},
-        {title: "Home 3", value: 3},
-        {title: "Home 4", value: 4},
-        {title: "Home 5", value: 5}
-    ]
+    useEffect(()=>{
+        if(data.length>0){
+            setSelectedValue(data[0])
+        }
+    },[data])
     const rotateIcon = () => {
       // Animate the rotation to 180 degrees
       Animated.timing(rotation, {
@@ -54,8 +52,8 @@ const DropDown = () =>{
 
     const renderItem = ({item}) =>{
         return (<>
-            <TouchableOpacity style={styles.itemContainer} onPress={()=>{setSelectedValue(item), showHideDropDown()}}>
-                <Text style={styles.text}>{item.title}</Text>
+            <TouchableOpacity key={`HPME-DROP-${item.id}`} style={styles.itemContainer} onPress={()=>{setSelectedValue(item),onSelect(item), showHideDropDown()}}>
+                <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
         </>)
     }
@@ -69,11 +67,11 @@ const DropDown = () =>{
             <TouchableWithoutFeedback onPress={showHideDropDown}>
                 <View style={styles.container}  >
                     <Text style={styles.titleValue}>
-                        {selectedValue.title}
+                        {selectedValue.name}
                     </Text>
                     <View style={styles.arrowContainer}>
                         <Animated.View style={{ transform: [{ rotate: rotateInterpolation }] }}>
-                            <DownUp width={16} height={16} fill={colors.Text} stroke={colors.Text} />
+                            <Down width={16} height={16} fill={colors.Text} stroke={colors.Text} />
                         </Animated.View>
                     </View>
                 </View>
@@ -99,7 +97,7 @@ const DropDown = () =>{
         <FlatList
             data={data}
             renderItem={renderItem}
-            keyExtractor={(item)=>item.value}
+            keyExtractor={(item)=>item.id}
             contentContainerStyle={styles.listContainer}
             showsVerticalScrollIndicator={false}
         />
