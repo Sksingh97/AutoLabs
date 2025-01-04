@@ -6,6 +6,7 @@ import {
     Image,
     TouchableOpacity,
     Platform,
+    SafeAreaView,
 } from "react-native"
 
 import { useContext } from "react"
@@ -26,7 +27,7 @@ const SetupHeader = ({LeftIcons=[], Title="", RightIcons=[], noOfStep=0, current
         return currentStep*((deviceWidth()/2)/noOfStep)
     }
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Header left button */}
             <View style={styles.LeftIconContainer}>
                 {LeftIcons && LeftIcons.map((item:any, i:number)=>(<TouchableOpacity key={`Left-icon${i}`} style={styles.LeftIconButton}>
@@ -48,7 +49,7 @@ const SetupHeader = ({LeftIcons=[], Title="", RightIcons=[], noOfStep=0, current
                 </TouchableOpacity>))}
                 
             </View>
-        </View>
+        </SafeAreaView>
     )
 }
 

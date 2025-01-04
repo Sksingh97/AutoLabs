@@ -21,6 +21,8 @@ import AddDevice from '../screens/AddDeviceFlow/AddDevice';
 import WifiScanner from '../screens/AddDeviceFlow/ConfigDevice';
 import AddDeviceScan from '../screens/AddDeviceFlow/AddDevice';
 import ConfigDevice from '../screens/AddDeviceFlow/ConfigDevice';
+import ConfigAppliance from '../screens/AddDeviceFlow/ConfigAppliance';
+import SetupDevice from '../screens/AddDeviceFlow/SetupDevice';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,6 +36,8 @@ const MainTab = () => {
     >
       <Stack.Screen name="AddDeviceScan" component={AddDeviceScan} />
       <Stack.Screen name="ConfigDevice" component={ConfigDevice} />
+      <Stack.Screen name="ConfigAppliance" component={ConfigAppliance} />
+      <Stack.Screen name="SetupDevice" component={SetupDevice} />
   </Stack.Navigator>)
   }else{
     return (

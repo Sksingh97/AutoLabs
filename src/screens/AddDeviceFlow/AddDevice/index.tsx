@@ -105,7 +105,7 @@ const AddDeviceScan = ({navigation}:any) => {
   }
   const handleDevicePress = ({id, ssid, mac}:any) => {
     dispatch(selectDeviceToConfig({id,ssid,mac}));
-    navigation.push('ConfigDevice')
+    navigation.push('ConfigDevice',{ noOfSteps:3, currentStep:1})
   };
 
   const buttons = [

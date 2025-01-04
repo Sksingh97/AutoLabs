@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { ActivityIndicator, View, StyleSheet, Text } from 'react-native';
+import { ThemeContext } from '../provider/theme';
 
 const withLoader = (WrappedComponent:any) => {
   return (props:any) => {
     // Use the useSelector hook to get the loadingCount from the Redux store
     const {loadingCount, title} = useSelector((state:any) => state.loader);
-
+    const { colors, translations } = useContext(ThemeContext);
+    const styles = getStyles(colors);
     return (
       <>
         <WrappedComponent {...props} />
@@ -14,7 +16,7 @@ const withLoader = (WrappedComponent:any) => {
           <View style={styles.loaderContainer}>
             {/* <View style={styles.mainContainer}> */}
               <View style={styles.loaderBody}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color={colors.Button.Primary} />
               </View>
               <View style={styles.loaderContent}>
                 <Text style={styles.msg}>{title}</Text>
@@ -27,7 +29,7 @@ const withLoader = (WrappedComponent:any) => {
   };
 };
 
-const styles = StyleSheet.create({
+const getStyles= (colors) => StyleSheet.create({
   loaderContainer: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
   loaderBody:{
     height:50,
     width:'50%',
-    backgroundColor: "#fff",
+    backgroundColor: colors.Primary,
     justifyContent:'center',
     alignItems:'center',
     paddingTop: 20,
@@ -52,14 +54,14 @@ const styles = StyleSheet.create({
   loaderContent:{
     height:50,
     width:'50%',
-    backgroundColor: "#fff",
+    backgroundColor: colors.Primary,
     justifyContent:'center',
     alignItems:'center',
     borderBottomLeftRadius:10,
     borderBottomRightRadius:10
   },
   msg:{
-    color: '#000',
+    color: colors.Text,
     fontSize: 15,
     fontWeight: 600
   }

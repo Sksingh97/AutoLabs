@@ -88,19 +88,21 @@ const MainApp = withLoader(()=>{
   }
 
   return (
-    <ThemeProvider>
+    
       <NavigationContainer ref={navigationRef}>
         <RootNav />
         <Toast />
       </NavigationContainer>
-    </ThemeProvider>
+    
   );
 });
 
 function App(): JSX.Element {
   return (
     <Provider store={store}>
+      <ThemeProvider>
       <MainApp/>
+      </ThemeProvider>
     </Provider>
   );
 }

@@ -3,7 +3,8 @@ import { watchAuthSaga } from './authSaga';
 import { watchHomeSaga } from './homeSaga';
 import { watchFloorSaga } from './floorSaga';
 import { watchRoomSaga } from './roomSaga';
+import { watchAddDeviceSaga } from './addDeviceSaga';
 
 export default function* rootSaga() {
-  yield all([watchAuthSaga(), watchHomeSaga(), watchFloorSaga(), watchRoomSaga()]);
+  yield all([watchAuthSaga(), watchHomeSaga(), watchFloorSaga(), watchRoomSaga(), watchAddDeviceSaga()]);
 }

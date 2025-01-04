@@ -24,3 +24,7 @@ export const FLOOR_LIST = "/floor/{HOME_ID}"
 export const ROOM = "/room/"
 export const ROOM_LIST = "/room/{FLOOR_ID}"
 
+
+//Add Device
+export const DEVICE_TYPE = "config?config_type=device_type"
+
