@@ -23,13 +23,18 @@ import AddDeviceScan from '../screens/AddDeviceFlow/AddDevice';
 import ConfigDevice from '../screens/AddDeviceFlow/ConfigDevice';
 import ConfigAppliance from '../screens/AddDeviceFlow/ConfigAppliance';
 import SetupDevice from '../screens/AddDeviceFlow/SetupDevice';
+import { HomeTab } from '../constants/images';
+import { useContext } from 'react';
+import { ThemeContext } from '../provider/theme';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
   const {isAddDeviceFlowEnables} = useSelector((state:any) => state.addDevice);
-  if (isAddDeviceFlowEnables){
+  const {colors, translations} = useContext(ThemeContext);
+
+  if (isAddDeviceFlowEnables) {
     return (<Stack.Navigator
     screenOptions={{headerShown:false}}
     initialRouteName='AddDeviceScan'
@@ -37,7 +42,7 @@ const MainTab = () => {
       <Stack.Screen name="AddDeviceScan" component={AddDeviceScan} />
       <Stack.Screen name="ConfigDevice" component={ConfigDevice} />
       <Stack.Screen name="ConfigAppliance" component={ConfigAppliance} />
-      <Stack.Screen name="SetupDevice" component={SetupDevice} />
+      <Stack.Screen name="SetupDevice" component={SetupDevice}  initialParams={{noOfSteps:3, currentStep:3}}/>
   </Stack.Navigator>)
   }else{
     return (
@@ -46,11 +51,28 @@ const MainTab = () => {
         tabBarPosition: deviceWidth() < 600 ? 'bottom' : 'left',
         headerShown: false,
         animation : 'shift',
+        tabBarStyle: {
+          backgroundColor: colors.Primary,
+          borderTopWidth: 1,
+          borderTopColor: colors.Border,
+        },
       }}
       initialRouteName='Home'
       >
-          <Tab.Screen name="Home" component={Home} />
-          
+          <Tab.Screen 
+            name="Home" 
+            component={Home}
+            options={{
+              tabBarIcon: ({ focused }) => (
+                <HomeTab 
+                  width={24} 
+                  height={24} 
+                  fill={focused ? colors.Button.Primary : colors.Text}
+                />
+              ),
+              tabBarLabel: '',
+            }}
+          />
       </Tab.Navigator>
     )
   }
@@ -98,7 +120,7 @@ const AccountSetupStack = ({loginStep}:any) => {
   }
 
   const getMainAppNav = (loginStep:number) => {
-    console.log("LOGIN STEP : : : :", loginStep)
+    console.log("LOGIN STEP : : ::", loginStep)
     if(loginStep<4) {
         return <AccountSetupStack loginStep={loginStep}/>
     }else{
@@ -112,8 +134,8 @@ const RootNav = () => {
      return (
         <>
         {token != null?getMainAppNav(login_step):<AuthStack/>}
-        {/* <AuthStack/>
-        <AccountSetupStack loginStep={loginStep}/> */}
+        {/* <AuthStack/> */}
+        {/* <AccountSetupStack loginStep={loginStep}/> */}
         </>
     )
 }

@@ -5,6 +5,7 @@ import { loadingReducer } from './loadingReducer';
 import { floorReducer } from './floorReducer';
 import { roomReducer } from './roomReducer';
 import { addDeviceReducer } from './addDeviceReducer';
+import { applianceReducer } from './applianceReducer';
 
 export const rootReducer = combineReducers({
   auth: authReducer,
@@ -12,5 +13,6 @@ export const rootReducer = combineReducers({
   loader: loadingReducer,
   floor: floorReducer,
   room: roomReducer,
-  addDevice: addDeviceReducer
+  addDevice: addDeviceReducer,
+  appliance: applianceReducer
 });

@@ -109,7 +109,7 @@ class WifiService {
      */
     async connectToWifi(ssid, password) {
         try {
-            await this.wifiManager.connectToProtectedSSID(ssid, password, false);
+            await this.wifiManager.connectToProtectedSSID(ssid, password, false, false);
             console.log(`Connected to Wi-Fi: ${ssid}`);
             return true;
         } catch (error) {

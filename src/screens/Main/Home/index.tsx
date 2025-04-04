@@ -1,8 +1,8 @@
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Switch, Platform } from "react-native"
 import { deviceHeight, deviceWidth, scaleSize } from "../../../utils/helper";
 import { vs, s, mvs } from 'react-native-size-matters/extend';
 import DropDown from "../../../components/dropDown";
-import { Add, AlertIcon, AQI, Bot, CloudSun, MicIcon, NoData, Vector, WaterDrop, WeatherBg, Wind } from "../../../constants/images";
+import { Add, AlertIcon, AQI, Bot, CloudSun, MicIcon, NoData, Vector, WaterDrop, WeatherBg, Wind, Appliance } from "../../../constants/images";
 import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../../../provider/theme";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +13,7 @@ import { initiateAddDeviceFlow } from "../../../store/actions/addDeviceAction";
 import { getFloorRequest } from "../../../store/actions/floorAction";
 import { getRoomRequest } from "../../../store/actions/roomAction";
 import { getHomeDetailsRequest, getHomeRequest } from "../../../store/actions/homeActions";
+import { updateApplianceRequest } from '../../../store/actions/applianceAction';
 import React from "react";
 
 
@@ -55,6 +56,13 @@ const Home = ({route, navigation}:any) => {
         // dispatch(getRoomRequest())
     },[homes]);
 
+    const handleToggleSwitch = (id: number, currentValue: string) => {
+        dispatch(updateApplianceRequest({
+            appliance_id: id,  
+            value: currentValue === "LOW" ? "HIGH" : "LOW"
+        }));
+    };
+
     const renderFloor = ({item}) => {
         return (
             <TouchableOpacity onPress={()=>{setSelectedFloor(item.id)}} style={[styles.floorContainer, selectedFloor==item.id?styles.active:{}]}>
@@ -65,7 +73,7 @@ const Home = ({route, navigation}:any) => {
 
     const renderRooms = ({item}) => {
         return (
-            <TouchableOpacity onPress={()=>{setSelectedRoom(item.id)}} style={[styles.roomContainer, styles.shadowBox, selectedRoom==item.id?styles.active:{}]}>
+            <TouchableOpacity onPress={()=>{setSelectedRoom(item.id)}} style={[styles.roomContainer, selectedRoom==item.id?styles.active:{}]}>
                 <Text style={[styles.roomText, selectedRoom==item.id?styles.textActive:{}]}>
                     {item.name}
                 </Text>
@@ -80,6 +88,29 @@ const Home = ({route, navigation}:any) => {
         }
        return []
     }
+
+    const renderAppliance = ({item}) => {
+        return (
+            <View style={[styles.applianceContainer, styles.shadowBox]}>
+                <View style={styles.applianceHeader}>
+                    <View style={styles.applianceIconContainer}>
+                        <Appliance width={mvs(60)} height={mvs(60)} fill={colors.Text} />
+                    </View>
+                    <View style={styles.switchContainer}>
+                        <Switch
+                            style={[{ transform: [{ scaleX: Platform.OS == 'ios'?.5:1 }, { scaleY: Platform.OS == 'ios'?.5:1 }] }]}
+                            trackColor={{ false: colors.Border, true: colors.Button.Primary }}
+                            thumbColor={colors.TextWhite}
+                            onValueChange={() => handleToggleSwitch(item.id, item.value)}
+                            value={item.value === "LOW"}
+                        />
+                    </View>
+                </View>
+                <Text style={styles.applianceName}>{item.appliance_name}</Text>
+            </View>
+        )
+    }
+
     return (
         <SafeAreaView style={styles.containr}>
             <View style={styles.headerContainer}>
@@ -143,29 +174,48 @@ const Home = ({route, navigation}:any) => {
             </View>
             <Vrs height={vs(20)}/>
             <View style={styles.devicesContainer}>
-                <View style={styles.noDataContainer}>
-                    <NoData width={mvs(120)} height={mvs(117)} fill={colors.Text}/>
-                </View>
-                <View style={styles.detailContainer}>
-                    <Vrs height={vs(20)}/>
-                    <Text style={styles.text}>No Device</Text>
-                    <Vrs height={vs(20)}/>
-                    <Text style={styles.text}>You haven't added a device yet.</Text>
-                </View>
-                <Vrs height={vs(20)}/>
-                <View style={styles.buttonContainer}>
-                    <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
-                        dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
-                    }}/>
-                </View>
+                {getSelectedFloorRooms().filter(room => room.id === selectedRoom)[0]?.appliance?.length > 0 ? (
+                    <FlatList 
+                        data={getSelectedFloorRooms().filter(room => room.id === selectedRoom)[0].appliance}
+                        renderItem={renderAppliance}
+                        keyExtractor={(item, index) => `${item.id}-${index}`}
+                        numColumns={2}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.applianceList}
+                        maxToRenderPerBatch={6}
+                        windowSize={5}
+                        scrollEnabled={true}
+                    />
+                ) : (
+                    <View style={styles.detailContainer}>
+                        <View style={styles.noDataContainer}>
+                            <NoData width={mvs(120)} height={mvs(117)} fill={colors.Text}/>
+                        </View>
+                        <View style={styles.detailContainer}>
+                            <Vrs height={vs(20)}/>
+                            <Text style={styles.text}>No Device</Text>
+                            <Vrs height={vs(20)}/>
+                            <Text style={styles.text}>You haven't added a device yet.</Text>
+                        </View>
+                        <Vrs height={vs(20)}/>
+                        <View style={styles.buttonContainer}>
+                            <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
+                                dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
+                            }}/>
+                        </View>
+                    </View>
+                )}
             </View>
             <View style={styles.buttonGroupContainer}>
                 <TouchableOpacity style={[styles.roundButtonContainer, {backgroundColor: colors.Border}]}>
                     <MicIcon width={mvs(28)} height={mvs(28)} fill={colors.Button.Primary}  />
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.roundButtonContainer, {backgroundColor: colors.Button.Primary}]}>
+                {getSelectedFloorRooms().filter(room => room.id === selectedRoom)[0]?.appliance?.length > 0 ? (
+                <TouchableOpacity style={[styles.roundButtonContainer, {backgroundColor: colors.Button.Primary}]} onPress={()=>{
+                    dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
+                }}>
                     <Add width={mvs(28)} height={mvs(28)} fill={colors.TextWhite} />
-                </TouchableOpacity>
+                </TouchableOpacity>):null}
             </View>
         </SafeAreaView>
     )
@@ -231,16 +281,17 @@ const getStyles = (colors) => StyleSheet.create({
         fontWeight: 'bold'
     },
     floorListContainer:{
-        paddingVertical: 0,
+        // paddingVertical: 0,
         margin:0,
         paddingLeft: s(10),
-        height: vs(20),
-        width: deviceWidth(),
+        paddingRight: s(10),
+        // height: vs(20),
+        // width: deviceWidth(),
         // alignItems: 'center'
     },
     floorContainer:{
-        width: 'auto',
-        height:vs(20),
+        width: 100,
+        // height:vs(20),
         backgroundColor: colors.Border,
         // borderTopStartRadius: s(20),
         borderTopEndRadius: s(35),
@@ -248,6 +299,7 @@ const getStyles = (colors) => StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         paddingHorizontal:s(10),
+        paddingVertical: s(5),
         borderColor:colors.Border,
         borderWidth:1,
         marginRight: s(10),
@@ -257,28 +309,31 @@ const getStyles = (colors) => StyleSheet.create({
         color: colors.Text
     },
     roomListContainer: {
-        height: vs(50),
-        paddingVertical: 0,
-        margin:0,
-        paddingLeft: s(10),
-        width: deviceWidth(),
-        paddingTop: vs(5),
-        // backgroundColor: 'red'
+        // height: vs(50),
+        // paddingVertical: 0,
+        // margin:0,
+        paddingLeft: s(20),
+
+        // width: deviceWidth(),
+        marginTop: vs(5),
+        // backgroundColor: 'red',
         // alignItems:'center',
-        overflow:'visible'
+        // overflow:'visible'
     },
     roomContainer: {
-        height: vs(30),
+        // height: vs(30),
         // width: s(100),
+        paddingVertical: 5,
+        paddingHorizontal: 30,
         flexDirection:'row',
         backgroundColor: colors.Primary,
         alignItems: 'center',
         justifyContent:'center',
-        paddingHorizontal:15,
+        // paddingHorizontal:15,
         borderTopEndRadius: s(50),
         borderBottomStartRadius: s(50),
         borderColor: colors.Border,
-        marginRight: s(10),
+        // paddingRight: s(20),
         borderWidth: 1,
     
     },
@@ -294,17 +349,15 @@ const getStyles = (colors) => StyleSheet.create({
     },
     shadowBox: {
         shadowColor: '#000', // Dark, enigmatic shadow
-        shadowOffset: { width: 0, height: 4 }, // The shadow’s position
-        shadowOpacity: 0.3, // Transparency of the shadow
-        shadowRadius: 6, // Softness of the shadow
-        elevation: 8, // For Android devices, to orchestrate the shadow’s depth
+        shadowOffset: { width: 0, height: 1 }, // The shadow’s position
+        shadowOpacity: 0.1, // Transparency of the shadow
+        shadowRadius: 1, // Softness of the shadow
+        elevation: 4, // For Android devices, to orchestrate the shadow’s depth
     },
     devicesContainer: {
-        marginHorizontal: s(20),
-        width:'90%',
-        // backgroundColor:'red',
-        height: vs(281),
-        alignItems:'center'
+        flex: 1,
+        width: '100%',
+        paddingHorizontal: s(10),
     },
     noDataContainer: {
         height: vs(117),
@@ -322,14 +375,14 @@ const getStyles = (colors) => StyleSheet.create({
     },
     buttonGroupContainer:{
         width:'95%',
-        height: vs(72),
+        height: vs(36),
         marginLeft: s(20),
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        alignItems:'center',
+        alignItems:'flex-end',
         position:'absolute',
         bottom:0,
-        paddingBottom: 16
+        paddingBottom: 16,
     },
     roundButtonContainer: {
         height: vs(56),
@@ -348,5 +401,46 @@ const getStyles = (colors) => StyleSheet.create({
     textActive: {
         color: colors.TextWhite
     },
-
+    applianceContainer: {
+        flex: 1,
+        height: vs(150),
+        backgroundColor: colors.Secondary,
+        margin: s(10),
+        borderRadius: s(20),
+        padding: s(15),
+        borderWidth: 1,
+        borderColor: colors.Border,
+        justifyContent: 'space-between',
+        maxWidth: '50%',
+    },
+    applianceHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    applianceIconContainer: {
+        width: s(40),
+        height: s(40),
+        borderRadius: s(20),
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    applianceName: {
+        color: colors.Text,
+        fontSize: mvs(16),
+        fontWeight: 'bold',
+        marginTop: vs(15),
+        // backgroundColor: 'yellow',
+    },
+    applianceStatus: {
+        color: colors.Text,
+        fontSize: mvs(14)
+    },
+    applianceList: {
+        paddingBottom: vs(80), // Add padding for bottom buttons
+    },
+    switchContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 })

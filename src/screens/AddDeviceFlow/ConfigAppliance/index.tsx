@@ -51,10 +51,10 @@ const ConfigAppliance = ({ route, navigation }: any) => {
   const renderApplianceNameField=()=>{
     return(<>
     {selectedDeviceType && selectedDeviceType.output>0 && Array.from({ length: selectedDeviceType.output }, (_, index) => (
-        <>
-            <InputField key={`APP-NAME-${index}`} label={`Appliance ${index+1} Name`} placeHolder={"Appliance Name"}  onChange={(value:string)=>{onApplianceNameChange(value, index)}}/>
-            <Vrs key={`APP-SPACE-${index}`} height={vs(35)}/>
-        </>
+        <View key={`APP-NAME-${index}`}>
+             <InputField label={`Appliance ${index+1} Name`} placeHolder={"Appliance Name"}  onChange={(value:string)=>{onApplianceNameChange(value, index)}}/>
+             <Vrs height={vs(35)}/>
+        </View>
     ))}
     </>)
   }

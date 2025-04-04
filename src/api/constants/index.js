@@ -1,4 +1,5 @@
-export const BASE_URL = "http://192.168.3.103:8000/api"
+export const BASE_URL = "https://autolabs.in/api"
+export const DEVICE_URL = "http://192.168.4.1/"
 
 //Authentication FLow
 export const TEMP_USER_CREATE = "/temp/users/"
@@ -27,4 +28,10 @@ export const ROOM_LIST = "/room/{FLOOR_ID}"
 
 //Add Device
 export const DEVICE_TYPE = "config?config_type=device_type"
+export const DEVICE = "/devices/"
+export const DEVICE_CONFIG_SEND = "/save-config"
+
+export const APPLIANCE_ENDPOINTS = {
+    PUBLISH: '/appliance/publish/'
+}
 

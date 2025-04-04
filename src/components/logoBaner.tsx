@@ -4,12 +4,12 @@ import { ThemeContext } from "../provider/theme";
 import { isIos } from "../utils/helper";
 
 
-const LogoBaner = () => {
+const LogoBaner = ({logoDim={}}) => {
     const {colors} = useContext(ThemeContext)
     const styles = getStyle(colors);
     return (
         <View style={styles.container}>
-            <Image style={styles.logo} source={require("../assets/images/logo.png")}/>
+            <Image style={[styles.logo, logoDim]} source={require("../assets/images/logo.png")}/>
         </View>
     )
 }

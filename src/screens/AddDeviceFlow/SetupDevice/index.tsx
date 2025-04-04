@@ -12,7 +12,7 @@ import DropDownSelect from "../../../components/dropDownV2";
 import WifiService from "../../../services/ wifiService";
 import { DropdownItem } from "../../../interfaces/interfaces";
 import InputField from "../../../components/inputField";
-import { getDeviceTypeRequest, selectDeviceType, selectWifiToConnect, setWifiToConnectPassword } from "../../../store/actions/addDeviceAction";
+import { closeAddDeviceFlow, createDeviceRequest, getDeviceTypeRequest, selectDeviceType, selectWifiToConnect, sendDeviceConfigRequest, setWifiToConnectPassword, updateStep } from "../../../store/actions/addDeviceAction";
 import SetupHeader from "../../../components/setupHeader";
 import SetupHeading from "../../../components/setupHeading";
 import CustomButton from "../../../components/button";
@@ -22,11 +22,12 @@ import { deviceHeight, deviceWidth } from "../../../utils/helper";
 
 const SetupDevice = ({ route, navigation }: any) => {
   const { noOfSteps, currentStep} = route.params;
-  const { selectedRoom, selectedDevice, deviceTypes, selectedDeviceType, wifiToConnect } = useSelector((state: any) => state.addDevice);
+  const { selectedRoom, selectedDevice, deviceTypes, selectedDeviceType, wifiToConnect, applianceName, step, createdDevice, wifiPassword } = useSelector((state: any) => {console.log(state.addDevice); return state.addDevice});
   const { colors, translations } = useContext(ThemeContext)
   const dispatch = useDispatch();
   const [progress, setProgress] = useState(0)
   const styles = getStyles(colors)
+  const wifiHandler = new WifiService();
 
   const renderBack = () => {
     return (
@@ -44,37 +45,57 @@ const SetupDevice = ({ route, navigation }: any) => {
     )
   }
 
-  const onWifiSelect = (item:DropdownItem) => {
-    dispatch(selectWifiToConnect(item.value));
-  }
-  const onDeviceTypeSelect = (item: DropdownItem) => {
-    console.log("Selected deviceType:   ", item)
-    const selectedDevice = deviceTypes.filter(rec => rec.name == item.value)
-    if(selectedDevice.length>0){
-      dispatch(selectDeviceType(selectedDevice[0]));
+  useLayoutEffect(() => {
+    //prepare create device data
+    console.log("\n\n------------------Creating Device---------------------")
+    if(step == 0){
+      const createDevicePayload = {
+        "device_mac": selectedDevice.mac,
+        "device_category": selectedDeviceType.name,
+        "appliance_names": applianceName,
+        "room_id": selectedRoom.id,
+      }
+      console.log("Payload : ", createDevicePayload);
+      dispatch(createDeviceRequest(createDevicePayload, 1));
     }
-  }
 
-  useEffect(() => {
-    const incrementProgress = () => {
-      const randomInterval = Math.random() * 1000 + 200; // Random delay between 200ms and 1200ms
+    if(step==1) {
+      //establish connection to device hotspot
+      console.log("\n\n------------------Conecting to wifi---------------------")
+      wifiHandler.connectToWifi(selectedDevice.ssid, 'INventor@**7').then((isConnected)=>{console.log("Connected successfully: ", isConnected); dispatch(updateStep(2))}).catch((reason)=>console.log("Unable to connect : ",reason))
+    }
+
+    if(step == 2) {
+      console.log("\n\n------------------Sending data to device---------------------")
+      console.log("Sending data to device on IP: 192.168.4.1")
+      const payload = {
+        "device_id":createdDevice.device_id,
+        "access_token": createdDevice.access_token,
+        "mac": selectedDevice.mac,
+        "wifiToConnect": wifiToConnect,
+        "wifiPassword": wifiPassword
+    }
+      console.log("Payload: ",payload);
+      dispatch(sendDeviceConfigRequest(payload));
+    }
+
+    if(step == 3) {
+      console.log("\n\n------------------Testing device device---------------------")
+      wifiHandler.disconnectFromWifi();
       setTimeout(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            return 100; // Stop incrementing when progress reaches 100
-          }
-          incrementProgress(); // Call the function recursively
-          return prev + Math.floor(Math.random() * 10) + 1; // Random increment between 1 and 10
-        });
-      }, randomInterval);
-    };
+      dispatch(closeAddDeviceFlow());
+    }, 10000);
+    }
 
-    incrementProgress(); // Start the random increment process
+    if(step == 4) {
+      console.log("\n\n------------------disconnect device---------------------")
+      setTimeout(() => {
+      wifiHandler.disconnectFromWifi();
+    }, 10000);
+    }
+    
+  }, [step]);
 
-    return () => {
-      setProgress(0); // Reset progress when component unmounts
-    };
-  }, []);
   const saveData=()=>{
   }
   const renderStepCount =()=><Text style={styles.text}> {currentStep} / {noOfSteps} </Text>

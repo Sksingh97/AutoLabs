@@ -39,6 +39,8 @@ import Bulb from "../assets/images/bulb.svg"
 import Device from "../assets/images/device.svg"
 import Wifi from "../assets/images/wifi.svg"
 import Bluetooth from "../assets/images/bluetooth.svg"
+import Appliance from "../assets/images/appliance.svg"
+import HomeTab from "../assets/images/hometab.svg"
 export {
     LeftArrow,
     Google,
@@ -80,5 +82,7 @@ export {
     Bulb,
     Device,
     Wifi,
-    Bluetooth
+    Bluetooth,
+    Appliance,
+    HomeTab    
 }

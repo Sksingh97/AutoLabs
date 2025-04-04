@@ -8,6 +8,8 @@ export const GET_HOME_DETAILS_REQUEST = 'GET_HOME_DETAILS_REQUEST'
 export const GET_HOME_DETAILS_SUCCESS = 'GET_HOME_DETAILS_SUCCESS'
 export const GET_HOME_DETAILS_FAILURE = 'GET_HOME_DETAILS_FAILURE'
 
+export const UPDATE_APPLIANCE_VALUE = 'UPDATE_APPLIANCE_VALUE';
+
 export const getHomeRequest = () => ({ type: GET_HOME_REQUEST, payload: {} });
 export const getHomeSuccess = (data) => ({ type: GET_HOME_SUCCESS, payload: data });
 export const getHomeFailure = (error) => ({ type: GET_HOME_FAILURE, payload: error });
@@ -19,3 +21,8 @@ export const createHomeFailure = (error) => ({ type: CREATE_HOME_FAILURE, payloa
 export const getHomeDetailsRequest = (id) => ({ type: GET_HOME_DETAILS_REQUEST, payload:{id} })
 export const getHomeDetailsSuccess = (data) => ({ type: GET_HOME_DETAILS_SUCCESS, payload: data });
 export const getHomeDetailsFail = (error) => ({ type: GET_HOME_DETAILS_FAILURE, payload: error });
+
+export const updateApplianceValue = (applianceId, value) => ({ 
+    type: UPDATE_APPLIANCE_VALUE, 
+    payload: { applianceId, value } 
+});
