@@ -3,45 +3,57 @@ import { createHomeSuccess, createHomeFailure, CREATE_HOME_REQUEST, getHomeSucce
 import { CreateHome, GetAllHomes, GetHomeDetails } from '../../api/service/homeService';
 import { INCREMENT_LOADING, DECREMENT_LOADING } from '../actions/loadingAction';
 import { navigate } from '../../navigation/navigationService';
-
+import { USER_HOME_DETAILS_KEY, USER_HOMES_LIST_KEY } from '../../utils/constants';
+import StorageService from '../../services/localStorageService';
 function* createHomeSaga(action) {
   try {
-    yield put({type: INCREMENT_LOADING, payload:{title: "Create Homes..."}})
+    yield put({ type: INCREMENT_LOADING, payload: { title: "Create Homes..." } })
     const response = yield call(CreateHome, action.payload.data);
     yield put(createHomeSuccess(response));
-    navigate('CreateFloor', {noOfSteps:action.payload.noOfSteps, currentStep:1+action.payload.currentStep, parentId: response.id})
+    navigate('CreateFloor', { noOfSteps: action.payload.noOfSteps, currentStep: 1 + action.payload.currentStep, parentId: response.id })
   } catch (error) {
     yield put(createHomeFailure(error.message));
   } finally {
-    yield put({type: DECREMENT_LOADING})
+    yield put({ type: DECREMENT_LOADING })
   }
 }
 
 function* getHomeSaga(action) {
   try {
-    yield put({type: INCREMENT_LOADING, payload:{title: "Fetching Homes..."}})
+    if (action.payload?.showLoader) {
+      yield put({ type: INCREMENT_LOADING, payload: { title: "Fetching Homes..." } })
+    }
     const response = yield call(GetAllHomes, action.payload.data);
+    StorageService.storeData(USER_HOMES_LIST_KEY, response);
     yield put(getHomeSuccess(response));
   } catch (error) {
-    if(error.status == 401) {
+    if (error.status == 401) {
       console.log("Retry")
       // dispatchService.dispatch({type: GET_HOME_REQUEST, payload: action.payload})
     }
     yield put(getHomeFailure(error.message));
   } finally {
-    yield put({type: DECREMENT_LOADING})
+    if (action.payload?.showLoader) {
+      yield put({ type: DECREMENT_LOADING })
+    }
   }
 }
 
 function* getHomeDetials(action) {
   try {
-    yield put({type: INCREMENT_LOADING, payload:{title: "Getting Home Details..."}})
+    if (action.payload?.showLoader) {
+      yield put({ type: INCREMENT_LOADING, payload: { title: "Getting Home Details..." } })
+    }
     const response = yield call(GetHomeDetails, action.payload.id);
+    StorageService.storeData(USER_HOME_DETAILS_KEY, response);
     yield put(getHomeDetailsSuccess(response));
+
   } catch (error) {
     yield put(getHomeDetailsFail(error.message));
   } finally {
-    yield put({type: DECREMENT_LOADING})
+    if (action.payload?.showLoader) {
+      yield put({ type: DECREMENT_LOADING })
+    }
   }
 }
 

@@ -52,11 +52,12 @@ import store from './src/store';
 import { navigationRef } from './src/navigation/navigationService';
 import Toast from 'react-native-toast-message';
 import StorageService from './src/services/localStorageService';
-import { USER_DETAILS_KEY } from './src/utils/constants';
+import { USER_DETAILS_KEY, USER_HOME_DETAILS_KEY, USER_HOMES_LIST_KEY } from './src/utils/constants';
 // import { loadUserDetails } from './src/store/actions/authAction';
 import { LoggedInUser } from './src/interfaces/interfaces';
 import { getUserDetailsRequest, loadUserDataFromStore, refreshTokenRequest } from './src/store/actions/authAction';
 import withLoader from './src/hoc/withLoader';
+import { getHomeDetailsSuccess, getHomeSuccess } from './src/store/actions/homeActions';
 
 
 const MainApp = withLoader(()=>{  
@@ -66,12 +67,21 @@ const MainApp = withLoader(()=>{
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        const data: LoggedInUser|null = await StorageService.getData(USER_DETAILS_KEY);
-        if (data && data.token) {
+        const data= await StorageService.getData(USER_DETAILS_KEY);
+        const homeDetails = await StorageService.getData(USER_HOME_DETAILS_KEY);
+        const homesList = await StorageService.getData(USER_HOMES_LIST_KEY);
+        if (data) {
           dispatch(loadUserDataFromStore(data));
+          if(homeDetails) {
+            dispatch(getHomeDetailsSuccess(homeDetails));
+          }
+          if(homesList) {
+            dispatch(getHomeSuccess(homesList));
+          }
           // dispatch(refreshTokenRequest(data));
           dispatch(getUserDetailsRequest({}))
         }
+        
       } catch (error) {
         console.error('Error retrieving user details from storage:', error);
       } finally {

@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Switch, Platform } from "react-native"
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Switch, Platform, TouchableWithoutFeedback } from "react-native"
 import { deviceHeight, deviceWidth, scaleSize } from "../../../utils/helper";
 import { vs, s, mvs } from 'react-native-size-matters/extend';
 import DropDown from "../../../components/dropDown";
@@ -26,11 +26,11 @@ const Home = ({route, navigation}:any) => {
     const styles = getStyles(colors);
     const dispatch = useDispatch();
     useEffect(()=>{
-        dispatch(getHomeRequest())
+        dispatch(getHomeRequest({showLoader:homeDetials.length==0}))
     },[])
     useEffect(()=>{
         if(selectedHome != 0){
-            dispatch(getHomeDetailsRequest(selectedHome))
+            dispatch(getHomeDetailsRequest({id:selectedHome, showLoader: homes.length == 0}))
         }
     },[selectedHome])
     useEffect(()=>{
@@ -91,26 +91,42 @@ const Home = ({route, navigation}:any) => {
 
     const renderAppliance = ({item}) => {
         return (
-            <View style={[styles.applianceContainer, styles.shadowBox]}>
+            <TouchableOpacity activeOpacity={1} style={[styles.applianceContainer, styles.shadowBox]} onPress={() => handleToggleSwitch(item.id, item.value)}>
+                <View style={item.value === "LOW"?styles.on:styles.off}></View>
                 <View style={styles.applianceHeader}>
                     <View style={styles.applianceIconContainer}>
                         <Appliance width={mvs(60)} height={mvs(60)} fill={colors.Text} />
                     </View>
-                    <View style={styles.switchContainer}>
-                        <Switch
+                    
+                    {/* <View style={styles.switchContainer}> */}
+                        {/* <Switch
                             style={[{ transform: [{ scaleX: Platform.OS == 'ios'?.5:1 }, { scaleY: Platform.OS == 'ios'?.5:1 }] }]}
                             trackColor={{ false: colors.Border, true: colors.Button.Primary }}
                             thumbColor={colors.TextWhite}
                             onValueChange={() => handleToggleSwitch(item.id, item.value)}
                             value={item.value === "LOW"}
-                        />
-                    </View>
+                        /> */}
+                    {/* </View> */}
                 </View>
                 <Text style={styles.applianceName}>{item.appliance_name}</Text>
-            </View>
+            </TouchableOpacity>
         )
     }
 
+    const renderCreateButton = () => {
+        if(getSelectedFloorRooms().length>0){
+            return <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
+                dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
+            }}/>
+        }else{
+            return (<>
+            <Text style={styles.text}>Pease Add Room</Text>
+            {/* <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
+                dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
+            }}/> */}
+            </>)
+        }
+    }
     return (
         <SafeAreaView style={styles.containr}>
             <View style={styles.headerContainer}>
@@ -179,7 +195,7 @@ const Home = ({route, navigation}:any) => {
                         data={getSelectedFloorRooms().filter(room => room.id === selectedRoom)[0].appliance}
                         renderItem={renderAppliance}
                         keyExtractor={(item, index) => `${item.id}-${index}`}
-                        numColumns={2}
+                        numColumns={4}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.applianceList}
                         maxToRenderPerBatch={6}
@@ -199,9 +215,7 @@ const Home = ({route, navigation}:any) => {
                         </View>
                         <Vrs height={vs(20)}/>
                         <View style={styles.buttonContainer}>
-                            <CustomButton showIcon={true} title={translations.homeScreen.addDevice} buttonStyle={styles.button} onPress={()=>{
-                                dispatch(initiateAddDeviceFlow(getSelectedFloorRooms().filter(item=>item.id==selectedRoom)[0]))
-                            }}/>
+                            {renderCreateButton()}
                         </View>
                     </View>
                 )}
@@ -402,16 +416,19 @@ const getStyles = (colors) => StyleSheet.create({
         color: colors.TextWhite
     },
     applianceContainer: {
-        flex: 1,
-        height: vs(150),
+        // flex: 1,
+        // height: vs(150),
+        // width: s(150),
         backgroundColor: colors.Secondary,
+        // backgroundColor:'red',
         margin: s(10),
-        borderRadius: s(20),
-        padding: s(15),
+        borderRadius: s(5),
+        padding: s(7.5),
         borderWidth: 1,
         borderColor: colors.Border,
         justifyContent: 'space-between',
-        maxWidth: '50%',
+        alignItems: 'center',
+        // maxWidth: '50%',
     },
     applianceHeader: {
         flexDirection: 'row',
@@ -419,28 +436,54 @@ const getStyles = (colors) => StyleSheet.create({
         alignItems: 'flex-start',
     },
     applianceIconContainer: {
-        width: s(40),
-        height: s(40),
-        borderRadius: s(20),
+        // width: s(40),
+        // height: s(40),
+        // borderRadius: s(20),
         justifyContent: 'center',
         alignItems: 'center',
     },
     applianceName: {
         color: colors.Text,
-        fontSize: mvs(16),
+        fontSize: mvs(12),
         fontWeight: 'bold',
         marginTop: vs(15),
-        // backgroundColor: 'yellow',
+        width: s(50),
+        textAlign: 'center',
     },
     applianceStatus: {
         color: colors.Text,
-        fontSize: mvs(14)
+        fontSize: mvs(12)
     },
     applianceList: {
         paddingBottom: vs(80), // Add padding for bottom buttons
+        // justifyContent: 'center',
+        // alignItems: 'center',
     },
     switchContainer: {
         alignItems: 'center',
         justifyContent: 'center',
     },
+    on: {
+        width: s(10),
+        height: s(10),
+        backgroundColor: colors.Button.Primary,
+        borderRadius: s(5),
+        position: 'absolute',
+        top: s(5),
+        right: s(5),
+        // borderWidth: 1,
+        // borderColor: colors.Border,
+    },
+    off: {
+        width: s(10),
+        height: s(10),
+        backgroundColor: colors.Border,
+        borderRadius: s(5),
+        position: 'absolute',
+        top: s(5),
+        right: s(5),
+        // borderWidth: 1,
+        // borderColor: colors.Border,
+    },
+    
 })

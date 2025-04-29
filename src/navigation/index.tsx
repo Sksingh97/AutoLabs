@@ -23,9 +23,10 @@ import AddDeviceScan from '../screens/AddDeviceFlow/AddDevice';
 import ConfigDevice from '../screens/AddDeviceFlow/ConfigDevice';
 import ConfigAppliance from '../screens/AddDeviceFlow/ConfigAppliance';
 import SetupDevice from '../screens/AddDeviceFlow/SetupDevice';
-import { HomeTab } from '../constants/images';
+import { DevicesIcon, HomeTab } from '../constants/images';
 import { useContext } from 'react';
 import { ThemeContext } from '../provider/theme';
+import Devices from '../screens/Main/Devices';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -68,6 +69,21 @@ const MainTab = () => {
                   width={24} 
                   height={24} 
                   fill={focused ? colors.Button.Primary : colors.Text}
+                />
+              ),
+              tabBarLabel: '',
+            }}
+          />
+          <Tab.Screen 
+            name="Devices" 
+            component={Devices}
+            options={{
+              tabBarIcon: ({ focused }) => (
+                <DevicesIcon 
+                  width={24} 
+                  height={24} 
+                  fill={focused ? colors.TextWhite : colors.TextWhite}
+                  
                 />
               ),
               tabBarLabel: '',
