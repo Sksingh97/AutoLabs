@@ -45,6 +45,7 @@
 import React, { useEffect, useState } from 'react';
 import BootSplash from 'react-native-bootsplash';
 import { NavigationContainer } from '@react-navigation/native';
+import { Linking } from 'react-native';
 import RootNav from './src/navigation';
 import { ThemeProvider } from './src/provider/theme';
 import { Provider, useDispatch, useSelector } from 'react-redux';
@@ -58,6 +59,7 @@ import { LoggedInUser } from './src/interfaces/interfaces';
 import { getUserDetailsRequest, loadUserDataFromStore, refreshTokenRequest } from './src/store/actions/authAction';
 import withLoader from './src/hoc/withLoader';
 import { getHomeDetailsSuccess, getHomeSuccess, setFavoriteAppliances } from './src/store/actions/homeActions';
+import { updateApplianceRequest } from './src/store/actions/applianceAction';
 
 
 const MainApp = withLoader(()=>{  
@@ -95,6 +97,33 @@ const MainApp = withLoader(()=>{
     };
     initializeApp();
   }, [dispatch]);
+  
+  useEffect(() => {
+    const handleUrl = (url?: string | null) => {
+      if (!url) return;
+      try {
+        const match = url.match(/autolabs:\/\/toggle\?applianceId=(\d+)&currentValue=(\w+)/);
+        if (match) {
+          const applianceId = Number(match[1]);
+          const currentValue = match[2].toUpperCase();
+          if (!Number.isNaN(applianceId) && (currentValue === 'LOW' || currentValue === 'HIGH')) {
+            const nextValue = currentValue === 'LOW' ? 'HIGH' : 'LOW';
+            dispatch(updateApplianceRequest({
+              appliance_id: applianceId,
+              value: nextValue
+            }));
+          }
+        }
+      } catch (error) {
+        console.warn('Error parsing deep link:', error);
+      }
+    };
+
+    Linking.getInitialURL().then(handleUrl).catch(() => null);
+    const subscription = Linking.addEventListener('url', (event) => handleUrl(event.url));
+    return () => subscription.remove();
+  }, [dispatch]);
+  
   if (!isAppReady) {
     return null;
   }else {

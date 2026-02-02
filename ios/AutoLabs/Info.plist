@@ -43,6 +43,17 @@
 	<string>We need your location to scan for Wi-Fi networks of our devices.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to scan for Wi-Fi networks of our devices.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.autolabs.widget</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>autolabs</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

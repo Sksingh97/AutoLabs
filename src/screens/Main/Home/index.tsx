@@ -17,6 +17,7 @@ import { updateApplianceRequest } from '../../../store/actions/applianceAction';
 import React from "react";
 import StorageService from "../../../services/localStorageService";
 import { FAVORITE_APPLIANCES_KEY } from "../../../utils/constants";
+import { buildWidgetPayload, updateWidgetData } from "../../../services/widgetService";
 
 
 const SELECTED_FLOOR_ID = -1;
@@ -25,6 +26,7 @@ const FAVORITE_ROOM_ID = -1;
 const Home = ({route, navigation}:any) => {
     const {colors, translations} = useContext(ThemeContext);
     const { homes, homeDetials, favoriteApplianceIds } = useSelector((state:any) => state.home);
+    const { token } = useSelector((state:any) => state.auth);
     const [ selectedFloor, setSelectedFloor ] = useState(0);
     const [ selectedRoom, setSelectedRoom ] = useState(0);
     const [ selectedHome, setSelectedHoom ] = useState(0);
@@ -76,6 +78,11 @@ const Home = ({route, navigation}:any) => {
         // //fetch rooms
         // dispatch(getRoomRequest())
     },[homes]);
+
+    useEffect(() => {
+        const payload = buildWidgetPayload(homeDetials, favoriteApplianceIds, token);
+        updateWidgetData(payload);
+    }, [homeDetials, favoriteApplianceIds, token]);
 
     const handleToggleSwitch = (id: number, currentValue: string) => {
         dispatch(updateApplianceRequest({
