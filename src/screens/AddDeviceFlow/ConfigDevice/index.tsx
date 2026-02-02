@@ -10,21 +10,25 @@ import { LeftArrow, QrScan } from "../../../constants/images";
 import { useDispatch, useSelector } from "react-redux";
 import DropDownSelect from "../../../components/dropDownV2";
 import WifiService from "../../../services/ wifiService";
+import BleService from "../../../services/bleService";
 import { DropdownItem } from "../../../interfaces/interfaces";
 import InputField from "../../../components/inputField";
 import { getDeviceTypeRequest, selectDeviceType, selectWifiToConnect, setWifiToConnectPassword } from "../../../store/actions/addDeviceAction";
 import SetupHeader from "../../../components/setupHeader";
 import SetupHeading from "../../../components/setupHeading";
 import CustomButton from "../../../components/button";
-import { deviceHeight, deviceWidth } from "../../../utils/helper";
+import { deviceHeight, deviceWidth, showTost } from "../../../utils/helper";
+import Toast from "react-native-toast-message";
 
-
+// BLE service and characteristic UUIDs
+const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
 const ConfigDevice = ({ route, navigation }: any) => {
   // const { device} = route.params;
   // const device = {id:1, ssid:'AUTO-LABS-000001', mac:"86:f3:eb:0a:9f:9f"}
   const { noOfSteps, currentStep} = route.params;
   const wifiHelper = new WifiService();
+  const bleHelper = new BleService();
   const { selectedRoom, selectedDevice, deviceTypes, selectedDeviceType, wifiToConnect } = useSelector((state: any) => state.addDevice);
   const { colors, translations } = useContext(ThemeContext)
   const [wifiList, setWifiList] = useState<DropdownItem[]>([]);
@@ -32,19 +36,12 @@ const ConfigDevice = ({ route, navigation }: any) => {
   const [ deviceTypeList, setDeviceTypeList ] = useState<DropdownItem[]>([]);
   const [ wifiPassword, setWifiPassword ] = useState("");
   const [ wifiPassError, setWifiPassError ] = useState("");
+  const [ isConnecting, setIsConnecting ] = useState(false);
+  const [ wifiCheck, setWifiCheck ] = useState(false);
   const dispatch = useDispatch();
+  console.log("selectedDevice", selectedDevice)
   // const [progress, setProgress] = useState(0)
   const styles = getStyles(colors)
-  const buttons = [
-    {
-      title: translations.addDeviceScan.nearBy,
-      onPress: () => { }
-    },
-    {
-      title: translations.addDeviceScan.manual,
-      onPress: () => { }
-    }
-  ]
 
   const renderBack = () => {
     return (
@@ -145,6 +142,94 @@ const ConfigDevice = ({ route, navigation }: any) => {
     setWifiPassword(password);
   }
 
+  /**
+   * Connect to BLE device and send WiFi credentials
+   */
+  const sendWifiCredsToTestConnection = async () => {
+    try {
+      if (selectedDevice && selectedDevice.deviceType === "BLE") {
+        // Show connecting status
+        setIsConnecting(true);
+        
+        // Connect to the BLE device
+        console.log("Connecting to device:", selectedDevice.mac);
+        if (!(await bleHelper.isDeviceConnected(selectedDevice.serviceUUIDs[0]))) {
+          const device = await bleHelper.connectToDevice(selectedDevice.mac);
+          console.log("Connected to device:", device);
+        }
+        
+        // Create a message with WiFi credentials
+        const wifiCredentials = JSON.stringify({
+          ssid: wifiToConnect,
+          password: wifiPassword,
+          type: "CREDS"
+        });
+        
+        console.log("Sending WiFi credentials to device:", wifiToConnect, wifiPassword);
+        
+        // Send the WiFi credentials to the device
+        await bleHelper.writeToCharacteristic(
+          selectedDevice.serviceUUIDs[0],
+          CHARACTERISTIC_UUID,
+          wifiCredentials,
+          true // Wait for response
+        );
+        
+        console.log("WiFi credentials sent successfully");
+        
+        // Disconnect from the device
+        // await bleHelper.disconnectDevice();
+        const response = await bleHelper.readCharacteristic(selectedDevice.serviceUUIDs[0],
+          CHARACTERISTIC_UUID)
+        console.log("Received data from device:", response);
+        let rep = atob(response);
+        rep = JSON.parse(rep);
+        console.log("Decoded response:", rep);
+        if (rep.status == "SUCCESS") {
+          console.log("device connected to wifi successfully");
+          setWifiCheck(true);
+          // showTost({type: "Success", header: "Device Connected", message: "Device connected to WiFi successfully"});
+        }else{
+          setWifiCheck(false);
+            Alert.alert(
+              'Error',
+              'Failed to connect to the device. Please check the WiFi credentials and try again.',
+              [{ 
+                text: 'Continue', 
+                onPress: () => {
+                  // navigation.push('ConfigAppliance', { noOfSteps: 3, currentStep: 2 });
+                }
+              }]
+            );
+        }
+      //   // Show success message
+      //   Alert.alert(
+      //     'Success',
+      //     'WiFi credentials sent to device successfully!',
+      //     [{ 
+      //       text: 'Continue', 
+      //       onPress: () => {
+      //         navigation.push('ConfigAppliance', { noOfSteps: 3, currentStep: 2 });
+      //       }
+      //     }]
+      //   );
+      } else {
+        // Handle WiFi mode or missing device selection
+        console.log("Device is not BLE or no device selected");
+        navigation.push('ConfigAppliance', { noOfSteps: 3, currentStep: 2 });
+      }
+    } catch (error) {
+      console.error('Error connecting to BLE device:', error);
+      Alert.alert(
+        'Connection Error',
+        'Failed to connect to the device. Please try again.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   const validatePassword = () => {
     if(!(wifiPassword.length>8)){
       setWifiPassError("Wifi password length less then 8");
@@ -217,7 +302,10 @@ const ConfigDevice = ({ route, navigation }: any) => {
         <Vrs height={vs(20)}/>
         <View style={styles.buttonContainer}>
             {/* <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/> */}
-            <CustomButton title={translations.setupScreen.save} buttonStyle={styles.button} onPress={saveData} isDisabled={validateData()}/>
+            {(selectedDevice && selectedDevice.deviceType == "BLE" && !wifiCheck)?
+             <CustomButton title={translations.setupScreen.test} buttonStyle={styles.button}  onPress={sendWifiCredsToTestConnection}/>
+            :<CustomButton title={translations.setupScreen.save} buttonStyle={styles.button} onPress={saveData} isDisabled={validateData()}/>}
+
         </View>
         <Vrs height={vs(40)}/>
         </ScrollView>

@@ -12,20 +12,33 @@ import CustomButton from "../../../components/button";
 import { initiateAddDeviceFlow } from "../../../store/actions/addDeviceAction";
 import { getFloorRequest } from "../../../store/actions/floorAction";
 import { getRoomRequest } from "../../../store/actions/roomAction";
-import { getHomeDetailsRequest, getHomeRequest } from "../../../store/actions/homeActions";
+import { getHomeDetailsRequest, getHomeRequest, toggleFavoriteAppliance, setFavoriteAppliances } from "../../../store/actions/homeActions";
 import { updateApplianceRequest } from '../../../store/actions/applianceAction';
 import React from "react";
+import StorageService from "../../../services/localStorageService";
+import { FAVORITE_APPLIANCES_KEY } from "../../../utils/constants";
 
+
+const SELECTED_FLOOR_ID = -1;
+const FAVORITE_ROOM_ID = -1;
 
 const Home = ({route, navigation}:any) => {
     const {colors, translations} = useContext(ThemeContext);
-    const { homes, homeDetials } = useSelector((state:any) => state.home);
+    const { homes, homeDetials, favoriteApplianceIds } = useSelector((state:any) => state.home);
     const [ selectedFloor, setSelectedFloor ] = useState(0);
     const [ selectedRoom, setSelectedRoom ] = useState(0);
     const [ selectedHome, setSelectedHoom ] = useState(0);
     const styles = getStyles(colors);
     const dispatch = useDispatch();
-    useEffect(()=>{
+    
+    useEffect(() => {
+        const loadFavorites = async () => {
+            const favorites = await StorageService.getData(FAVORITE_APPLIANCES_KEY);
+            if (favorites && Array.isArray(favorites)) {
+                dispatch(setFavoriteAppliances(favorites));
+            }
+        };
+        loadFavorites();
         dispatch(getHomeRequest({showLoader:homeDetials.length==0}))
     },[])
     useEffect(()=>{
@@ -35,17 +48,25 @@ const Home = ({route, navigation}:any) => {
     },[selectedHome])
     useEffect(()=>{
         if(selectedFloor == 0 && homeDetials.length>0){
-            setSelectedFloor(homeDetials[0].id)
-        }
-    },[homeDetials])
-    useEffect(()=>{
-        if(selectedFloor != 0 && homeDetials.length>0){
-            const rooms = getSelectedFloorRooms()
-            if(rooms.length>0) {
-                setSelectedRoom(rooms[0].id)
+            if(favoriteApplianceIds.length > 0) {
+                setSelectedFloor(SELECTED_FLOOR_ID);
+            } else {
+                setSelectedFloor(homeDetials[0].id)
             }
         }
-    },[selectedFloor])
+    },[homeDetials, favoriteApplianceIds])
+    useEffect(()=>{
+        if(selectedFloor != 0){
+            if(selectedFloor === SELECTED_FLOOR_ID) {
+                setSelectedRoom(FAVORITE_ROOM_ID);
+            } else if(homeDetials.length>0) {
+                const rooms = getSelectedFloorRooms()
+                if(rooms.length>0) {
+                    setSelectedRoom(rooms[0].id)
+                }
+            }
+        }
+    },[selectedFloor, homeDetials])
     useEffect(()=>{
         if(homes.length>0){
             setSelectedHoom(homes[0].id)
@@ -61,6 +82,14 @@ const Home = ({route, navigation}:any) => {
             appliance_id: id,  
             value: currentValue === "LOW" ? "HIGH" : "LOW"
         }));
+    };
+
+    const handleLongPress = async (id: number) => {
+        dispatch(toggleFavoriteAppliance(id));
+        const updatedFavorites = favoriteApplianceIds.includes(id)
+            ? favoriteApplianceIds.filter((fId: number) => fId !== id)
+            : [...favoriteApplianceIds, id];
+        await StorageService.storeData(FAVORITE_APPLIANCES_KEY, updatedFavorites);
     };
 
     const renderFloor = ({item}) => {
@@ -81,7 +110,36 @@ const Home = ({route, navigation}:any) => {
         )
     }
 
+    const getFavoriteAppliances = () => {
+        const favorites: any[] = [];
+        if(homeDetials && Array.isArray(homeDetials)) {
+            homeDetials.forEach((floor: any) => {
+                floor.rooms?.forEach((room: any) => {
+                    room.appliance?.forEach((app: any) => {
+                        if(favoriteApplianceIds.includes(app.id)) {
+                            favorites.push(app);
+                        }
+                    });
+                });
+            });
+        }
+        return favorites;
+    };
+
+    const getFloorsWithSelected = () => {
+        if(favoriteApplianceIds.length > 0) {
+            return [
+                { id: SELECTED_FLOOR_ID, name: 'Selected' },
+                ...(homeDetials || [])
+            ];
+        }
+        return homeDetials || [];
+    };
+
     const getSelectedFloorRooms = () => {
+        if(selectedFloor === SELECTED_FLOOR_ID) {
+            return [{ id: FAVORITE_ROOM_ID, name: 'Favorite', appliance: getFavoriteAppliances() }];
+        }
         if(homeDetials) {
             const floor = homeDetials.filter(item=>item.id==selectedFloor);
             return floor.length>0?floor[0].rooms:[]
@@ -90,9 +148,20 @@ const Home = ({route, navigation}:any) => {
     }
 
     const renderAppliance = ({item}) => {
+        const isFavorite = favoriteApplianceIds.includes(item.id);
         return (
-            <TouchableOpacity activeOpacity={1} style={[styles.applianceContainer, styles.shadowBox]} onPress={() => handleToggleSwitch(item.id, item.value)}>
+            <TouchableOpacity 
+                activeOpacity={1} 
+                style={[styles.applianceContainer, styles.shadowBox]} 
+                onPress={() => handleToggleSwitch(item.id, item.value)}
+                onLongPress={() => handleLongPress(item.id)}
+            >
                 <View style={item.value === "LOW"?styles.on:styles.off}></View>
+                {isFavorite && (
+                    <View style={styles.favoriteIcon}>
+                        <Text style={styles.starIcon}>★</Text>
+                    </View>
+                )}
                 <View style={styles.applianceHeader}>
                     <View style={styles.applianceIconContainer}>
                         <Appliance width={mvs(60)} height={mvs(60)} fill={colors.Text} />
@@ -169,7 +238,7 @@ const Home = ({route, navigation}:any) => {
             <Vrs height={vs(20)}/>
             <View style={styles.floorListContainer}>
                 <FlatList
-                    data={homeDetials}
+                    data={getFloorsWithSelected()}
                     renderItem={renderFloor}
                     keyExtractor={(item) => item.id.toString()}
                     horizontal
@@ -484,6 +553,17 @@ const getStyles = (colors) => StyleSheet.create({
         right: s(5),
         // borderWidth: 1,
         // borderColor: colors.Border,
+    },
+    favoriteIcon: {
+        position: 'absolute',
+        top: s(5),
+        left: s(5),
+        zIndex: 10,
+    },
+    starIcon: {
+        color: '#FFD700',
+        fontSize: mvs(16),
+        fontWeight: 'bold',
     },
     
 })

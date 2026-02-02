@@ -9,6 +9,8 @@ export const GET_HOME_DETAILS_SUCCESS = 'GET_HOME_DETAILS_SUCCESS'
 export const GET_HOME_DETAILS_FAILURE = 'GET_HOME_DETAILS_FAILURE'
 
 export const UPDATE_APPLIANCE_VALUE = 'UPDATE_APPLIANCE_VALUE';
+export const TOGGLE_FAVORITE_APPLIANCE = 'TOGGLE_FAVORITE_APPLIANCE';
+export const SET_FAVORITE_APPLIANCES = 'SET_FAVORITE_APPLIANCES';
 
 export const getHomeRequest = (data) => ({ type: GET_HOME_REQUEST, payload: data });
 export const getHomeSuccess = (data) => ({ type: GET_HOME_SUCCESS, payload: data });
@@ -25,4 +27,14 @@ export const getHomeDetailsFail = (error) => ({ type: GET_HOME_DETAILS_FAILURE, 
 export const updateApplianceValue = (applianceId, value) => ({ 
     type: UPDATE_APPLIANCE_VALUE, 
     payload: { applianceId, value } 
+});
+
+export const toggleFavoriteAppliance = (applianceId) => ({
+    type: TOGGLE_FAVORITE_APPLIANCE,
+    payload: applianceId
+});
+
+export const setFavoriteAppliances = (favorites) => ({
+    type: SET_FAVORITE_APPLIANCES,
+    payload: favorites
 });

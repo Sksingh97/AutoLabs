@@ -52,12 +52,12 @@ import store from './src/store';
 import { navigationRef } from './src/navigation/navigationService';
 import Toast from 'react-native-toast-message';
 import StorageService from './src/services/localStorageService';
-import { USER_DETAILS_KEY, USER_HOME_DETAILS_KEY, USER_HOMES_LIST_KEY } from './src/utils/constants';
+import { USER_DETAILS_KEY, USER_HOME_DETAILS_KEY, USER_HOMES_LIST_KEY, FAVORITE_APPLIANCES_KEY } from './src/utils/constants';
 // import { loadUserDetails } from './src/store/actions/authAction';
 import { LoggedInUser } from './src/interfaces/interfaces';
 import { getUserDetailsRequest, loadUserDataFromStore, refreshTokenRequest } from './src/store/actions/authAction';
 import withLoader from './src/hoc/withLoader';
-import { getHomeDetailsSuccess, getHomeSuccess } from './src/store/actions/homeActions';
+import { getHomeDetailsSuccess, getHomeSuccess, setFavoriteAppliances } from './src/store/actions/homeActions';
 
 
 const MainApp = withLoader(()=>{  
@@ -70,6 +70,7 @@ const MainApp = withLoader(()=>{
         const data= await StorageService.getData(USER_DETAILS_KEY);
         const homeDetails = await StorageService.getData(USER_HOME_DETAILS_KEY);
         const homesList = await StorageService.getData(USER_HOMES_LIST_KEY);
+        const favorites = await StorageService.getData(FAVORITE_APPLIANCES_KEY);
         if (data) {
           dispatch(loadUserDataFromStore(data));
           if(homeDetails) {
@@ -77,6 +78,9 @@ const MainApp = withLoader(()=>{
           }
           if(homesList) {
             dispatch(getHomeSuccess(homesList));
+          }
+          if(favorites && Array.isArray(favorites)) {
+            dispatch(setFavoriteAppliances(favorites));
           }
           // dispatch(refreshTokenRequest(data));
           dispatch(getUserDetailsRequest({}))

@@ -91,7 +91,8 @@ class WifiService {
      * @returns {Promise<Object|null>} - Details of the matched Wi-Fi network or null if not found.
      */
     async scanForSpecificWifi() {
-        const regex = /^AUTO-LABS-/;
+        // const regex = /^AUTO-LABS-/;
+        const regex = /^Auto-Labs-/;
         try {
             const networks = await this.scanWifiNetworks();
             return networks.filter((network) => regex.test(network.SSID)) || [];

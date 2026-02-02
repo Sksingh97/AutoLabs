@@ -17,8 +17,9 @@ import SetupHeader from "../../../components/setupHeader";
 import SetupHeading from "../../../components/setupHeading";
 import CustomButton from "../../../components/button";
 import { deviceHeight, deviceWidth } from "../../../utils/helper";
+import BleService from "../../../services/bleService";
 
-
+const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
 const SetupDevice = ({ route, navigation }: any) => {
   const { noOfSteps, currentStep} = route.params;
@@ -28,6 +29,7 @@ const SetupDevice = ({ route, navigation }: any) => {
   const [progress, setProgress] = useState(0)
   const styles = getStyles(colors)
   const wifiHandler = new WifiService();
+  const bleHelper = new BleService();
 
   const renderBack = () => {
     return (
@@ -65,7 +67,7 @@ const SetupDevice = ({ route, navigation }: any) => {
       wifiHandler.connectToWifi(selectedDevice.ssid, 'INventor@**7').then((isConnected)=>{console.log("Connected successfully: ", isConnected); dispatch(updateStep(2))}).catch((reason)=>console.log("Unable to connect : ",reason))
     }
 
-    if(step == 2) {
+    if(step == 2 && selectedDevice.deviceType == 'WiFi') {
       console.log("\n\n------------------Sending data to device---------------------")
       console.log("Sending data to device on IP: 192.168.4.1")
       const payload = {
@@ -73,24 +75,84 @@ const SetupDevice = ({ route, navigation }: any) => {
         "access_token": createdDevice.access_token,
         "mac": selectedDevice.mac,
         "wifiToConnect": wifiToConnect,
-        "wifiPassword": wifiPassword
+        "wifiPassword": wifiPassword,
+        "type": "DEVICE_CONFIG"
     }
       console.log("Payload: ",payload);
       dispatch(sendDeviceConfigRequest(payload));
     }
 
-    if(step == 3) {
+    if(step == 2 && selectedDevice.deviceType == 'BLE') {
+      console.log("\n\n------------------Sending data to device via BLE---------------------")
+      console.log("Sending data to device on BLE ", selectedDevice.ssid)
+      // setIsConnecting(true);
+        
+      // Connect to the BLE device
+      console.log("Connecting to device:", selectedDevice.mac);
+      // if (!(await bleHelper.isDeviceConnected(selectedDevice.serviceUUIDs[0]))) {
+      //   const device = await bleHelper.connectToDevice(selectedDevice.mac);
+      //   console.log("Connected to device:", device);
+      // }
+      bleHelper.isDeviceConnected(selectedDevice.serviceUUIDs[0]).
+      then(async (isConnected) => {
+        console.log("Is device connected:", isConnected);
+        if (!isConnected) {
+          bleHelper.connectToDevice(selectedDevice.mac).then((device) => {
+            console.log("Connected to device:", device);
+            let payload = JSON.stringify({
+            "device_id":createdDevice.device_id,
+            "access_token": createdDevice.access_token,
+            "mac": selectedDevice.mac,
+            "wifiToConnect": wifiToConnect,
+            "wifiPassword": wifiPassword,
+            "type": "DEVICE_CONFIG"
+        });
+        console.log("Device is already connected, sending data:", payload);
+        bleHelper.writeToCharacteristic(
+          selectedDevice.serviceUUIDs[0],
+          CHARACTERISTIC_UUID,
+          payload,
+          true
+        ).then(() => {
+          console.log("Data sent successfully");
+          setTimeout(() => {
+            dispatch(updateStep(3));
+          }, 5000);
+        }).catch((error) => {
+          console.log("Error sending data:", error);
+        });
+          });
+        }
+  }).
+      catch((error) => {
+        console.log("Error connecting to device:", error);
+      });
+    }
+
+    if(step == 3 && selectedDevice.deviceType == 'WiFi') {
       console.log("\n\n------------------Testing device device---------------------")
       wifiHandler.disconnectFromWifi();
       setTimeout(() => {
       dispatch(closeAddDeviceFlow());
     }, 10000);
     }
+    if (step == 3 && selectedDevice.deviceType == 'BLE') {
+      console.log("\n\n------------------Testing device device---------------------")
+      bleHelper.disconnectDevice().then(() => {
+        console.log("Device disconnected successfully");
+        setTimeout(() => {
+          dispatch(closeAddDeviceFlow());
+        }, 10000);
+      }).catch((error) => {
+        console.log("Error disconnecting device:", error);
+      });
+    }
 
     if(step == 4) {
       console.log("\n\n------------------disconnect device---------------------")
       setTimeout(() => {
       wifiHandler.disconnectFromWifi();
+      bleHelper.disconnectDevice();
     }, 10000);
     }
     
@@ -108,7 +170,7 @@ const SetupDevice = ({ route, navigation }: any) => {
         <Vrs height={vs(30)}/>
         <SetupHeading message={()=><Text style={styles.headerText}>Setup Device</Text>}/>
         <Vrs height={vs(30)}/>
-        <CircularProgressBar radius={180} strokeWidth={10} percentage={progress}/>
+        <CircularProgressBar radius={180} strokeWidth={10} percentage={25*step}/>
         <Vrs height={vs(20)}/>
         {/* <View style={styles.buttonContainer}> */}
             {/* <CustomButton title={translations.setupScreen.back} isDisabled={currentStep==1}  buttonStyle={styles.button} onPress={()=>{navigation.pop()}}/> */}

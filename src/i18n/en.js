@@ -42,6 +42,7 @@ export default {
         back:"Back",
         save: "Save",
         create: "Create",
+        test:"Test Wifi Connection",
         home:{
             add: "Add",
             select: "Select",

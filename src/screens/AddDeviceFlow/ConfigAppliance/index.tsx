@@ -24,7 +24,7 @@ const ConfigAppliance = ({ route, navigation }: any) => {
   const [ deviceNameError, setDeviceNameError ] = useState("");
   const dispatch = useDispatch();
   const styles = getStyles(colors)
-
+  console.log("selectedDevice", selectedDevice);
   const renderBack = () => {
     return (
       <TouchableOpacity onPress={() => {  navigation.pop();  }}>
